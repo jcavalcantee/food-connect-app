@@ -24,7 +24,7 @@ export const style = StyleSheet.create({
         marginTop: '2%'
     },
 
-    backToLogin: {
+    cadastrese: {
         marginTop: '10%',
         textDecorationLine: 'underline',
         fontWeight: 'bold',
