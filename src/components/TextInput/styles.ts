@@ -4,7 +4,7 @@ import { themas } from "../../global/themas"
 export const style = StyleSheet.create({
     boxInput: {
         width: '70%',
-        height: '7%',
+        height: '13%',
         borderRadius: 15,
         backgroundColor: themas.colors.boxInputColor,
         marginTop: '15%',
