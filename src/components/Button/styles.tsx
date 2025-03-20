@@ -4,7 +4,7 @@ import { themas } from "../../global/themas"
 export const style = StyleSheet.create({
     confirmButton: {
         width: '40%',
-        height: '8%',
+        height: '30%',
         borderRadius: 15,
         marginTop: '12%',
         justifyContent: 'center',
