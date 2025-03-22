@@ -24,6 +24,13 @@ export const style = StyleSheet.create({
         marginTop: '2%'
     },
 
+    footer: {
+        // backgroundColor: 'green',
+        height: '20%',
+        width: '100%',
+        alignItems: 'center'
+    },
+
     cadastrese: {
         marginTop: '10%',
         textDecorationLine: 'underline',
