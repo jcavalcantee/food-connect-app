@@ -4,10 +4,9 @@ import Validation from "./src/pages/EmailValidation/index"
 
 export default function App() {
   return (
-    // <SolicitacaoEmail />
+    <SolicitacaoEmail />
     // <Login/>
-    <Validation/>
-
+    // <Validation/>
   );
 }
 

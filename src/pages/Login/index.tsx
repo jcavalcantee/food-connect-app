@@ -43,7 +43,9 @@ export default function Login() {
                 <Text style={style.info}>Informe suas credenciais para validação.</Text>
                 <TextInputForms placeholder="Digite seu e-mail" value={email} onChangeText={setEmail}/>
                 <TextInputForms placeholder='Digite sua senha' value={password} onChangeText={setPassword}/>
-                <Button onPress={handleLogin} title='Entrar'/>
+                <View style={style.footer}>
+                    <Button onPress={handleLogin} title='Entrar'/>
+                </View>
                 <Text style={style.cadastrese}>Cadastre-se aqui</Text>
             </View>
         </View>
