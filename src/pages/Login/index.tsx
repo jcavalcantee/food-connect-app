@@ -16,7 +16,7 @@ export default function Login() {
         }
 
         try {
-            const response = await fetch('https://suaapi.com/login', {
+            const response = await fetch('http://192.168.100.85:8082/CustomerLogin', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -25,13 +25,12 @@ export default function Login() {
             const data = await response.json();
 
             if (response.ok) {
-                Alert.alert("Sucesso", "Login realizado!");
-                console.log("Token recebido:", data.token);
+                Alert.alert(data.status, data.message);
             } else {
-                Alert.alert("Erro", data.message || "Falha no login");
+                Alert.alert(data.status, data.message);
             }
         } catch (error) {
-            Alert.alert("Erro", "Erro ao conectar com o servidor");
+            Alert.alert("Erro", "Erro ao conectar com o servidor" + error);
         }
     };
 
