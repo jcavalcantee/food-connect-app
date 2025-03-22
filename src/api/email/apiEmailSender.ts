@@ -3,30 +3,30 @@ import apiEmailSender from "../clients/emailClient";
 export async function sendValidationCode(email: string) {
     try {
         if (!email.includes("@senacsp.edu.br") && !email.includes("@sp.senac.br")) {
-            throw new Error("Invalid email domain.")
+            throw new Error("Domínio de email inválido.");
         }
-        console.warn("Email sent to: ", email);
-        const response = await apiEmailSender.post(`?email=${email}`);
-        
-        console.warn("Email sent successfully", response.data);
-        return response.data;
-    } catch (error) {
-        console.error("Error on sending email", error);
+        console.info("Email enviado para: ", email);
+        const response = await apiEmailSender.post(`/send-email?email=${email}`);
+        console.info("URL API: ", apiEmailSender.defaults.baseURL);
+
+        if (response.status === 201) {
+            console.info(response.data);
+            return response.status; 
+        } else {
+            throw new Error(`Status de resposta não esperado: ${response.status}`);
+        }
+    } catch (error: any) {
+        if (error.response) {
+            console.error("Erro de resposta do servidor:", error.response.data);
+            console.error("Status code:", error.response.status);
+            console.error("Headers:", error.response.headers);
+        } else if (error.request) {
+            console.error("Resposta não recebida:", error.request);
+        } else {
+            console.error("Erro na requisição:", error.message);
+        }
+        console.error("Config:", error.config);
         throw error;
     }
 };
-
-// Exemplo de exportação no arquivo apiEmailSender.ts
-export async function getKeys() {
-    const response = await fetch('http://192.168.0.1:8080/all-keys', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-        },
-    });
-    if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-    }
-    return response.json();
-}
 
