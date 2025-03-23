@@ -4,6 +4,7 @@ import { style } from "./styles"
 interface ButtonProps{
     onPress: (event: GestureResponderEvent) => void;
     title?: string;
+    disabled?: boolean;
 }
 export default function Button({ onPress, title="Confirmar" }: ButtonProps) {
     return (

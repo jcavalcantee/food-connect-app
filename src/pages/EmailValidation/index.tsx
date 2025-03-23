@@ -1,26 +1,24 @@
 import { useState, useEffect } from 'react';
 import { View, Text, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity } from 'react-native';
-import { StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { style } from "./styles"
 import HeaderApp from "../../components/Header/header"
 import ValidationCode from "../../components/TextInputCode/inputTextCode"
 import Button from "../../components/Button/button"
-import AsyncStorage from '@react-native-async-storage/async-storage'
 import { validateAccount } from "../../api/validation/apiValidation"
 import { sendValidationCode } from '../../api/email/apiEmailSender';
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
     EmailValidation: undefined;
+    RegisterCustomerScreen: undefined;
 };
 
 type EmailValidationNavigationProp = StackNavigationProp<RootStackParamList, 'EmailValidation'>;
 
-interface Props {
-    navigation: EmailValidationNavigationProp;
-}
-
 export default function EmailValidation() {
-
+    const navigation = useNavigation<EmailValidationNavigationProp>();
     const [timeLeft, setTimeLeft] = useState(600);
     const [codeValues, setCodeValues] = useState(['', '', '', '']);
     const [email, setEmail] = useState<string>('');
@@ -84,6 +82,7 @@ export default function EmailValidation() {
             const response = await validateAccount(email, code);
             if (response === 200) {
                 Alert.alert("Email validado com sucesso!");
+                navigation.navigate('RegisterCustomerScreen')
             } else {
                 Alert.alert("Erro na validação do email");
             }

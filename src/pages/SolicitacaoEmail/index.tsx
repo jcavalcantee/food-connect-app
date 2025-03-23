@@ -1,16 +1,28 @@
 import { useEffect, useState } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { style } from "./styles"
 import Button from "../../components/Button/button"
 import TextInputForms from "../../components/TextInput/inputTextForms"
 import HeaderApp from "../../components/Header/header"
-import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import { StackNavigationProp } from '@react-navigation/stack';
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import { sendValidationCode } from "../../api/email/apiEmailSender"
+import { useNavigation } from '@react-navigation/native';
 
-export default function Header() {
+type RootStackParamList = {
+    Login: undefined;
+    SolicitacaoEmail: undefined;
+    EmailValidation: undefined;
+};
+
+type SolicitacaoEmailNavigationProp = StackNavigationProp<RootStackParamList, 'SolicitacaoEmail'>;
+
+export default function SolicitacaoEmail() {
     const [email, setEmail] = useState<string>('');
     const [savedValue, setSavedValue] = useState('');
+    
+    // Adicionando a navegação
+    const navigation = useNavigation<SolicitacaoEmailNavigationProp>();
 
     const handleValidationEmail = async () => {
         try {
@@ -23,6 +35,7 @@ export default function Header() {
             if (response === 201) {
                 Alert.alert("Email enviado com sucesso!")
                 await saveValue(email);
+                navigation.navigate('EmailValidation')
             } else {
                 Alert.alert("Erro no envio do email")
             }
@@ -64,7 +77,9 @@ export default function Header() {
                 <Text style={style.info}>Informe seu e-mail institucional para validação.</Text>
                 <TextInputForms placeholder="Digite seu e-mail" value={email} onChangeText={setEmail} />
                 <Button onPress={handleValidationEmail} title='Confirmar' />
-                <Text style={style.backToLogin}>Voltar para o login</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                    <Text style={style.backToLogin}>Voltar para o login</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );

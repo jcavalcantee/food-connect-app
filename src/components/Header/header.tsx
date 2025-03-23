@@ -1,14 +1,22 @@
-import { View, Image} from 'react-native';
 import Logo from "../../assets/images/logo-sem-fundo.png"
-import { style } from "./styles"
+import { View, Image, StyleProp, ImageStyle, ViewStyle } from 'react-native';
+import { style } from './styles';
 
-export default function Header() {
+interface HeaderProps {
+    headerStyle?: StyleProp<ViewStyle>;
+    logoStyle?: StyleProp<ImageStyle>;
+}
+
+const HeaderApp: React.FC<HeaderProps> = ({ headerStyle, logoStyle }) => {
     return (
-        <View style={style.header}>
+        <View style={[style.header, headerStyle]}>
             <Image
                 source={Logo}
-                style={style.logo}
+                style={[style.logo, logoStyle]}
+                resizeMode="contain"
             />
         </View>
     );
-}
+};
+
+export default HeaderApp;
