@@ -1,6 +1,6 @@
 // filepath: src/pages/RegisterCustomerScreen/index.tsx
-import React from "react";
-import { Controller, useForm } from "react-hook-form";
+import React, { useState } from "react";
+import { useForm } from "react-hook-form";
 import { View, Text, Alert } from "react-native";
 import HeaderApp from "../../components/Header/header";
 import { style } from "./styles";
@@ -9,6 +9,7 @@ import Button from "../../components/Button/button";
 import { registerCustomer } from '../../api/register/apiRegisterCustomer';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import LoadingModal from "../../components/LoadingModal"; 
 
 // Tipar corretamente a navegação
 type NavigationProp = StackNavigationProp<RootStackParamList, 'RegisterCustomerScreen'>;
@@ -31,6 +32,7 @@ export default function RegisterCustomerScreen() {
     const navigation = useNavigation<NavigationProp>();
     const route = useRoute<RegisterCustomerRouteProp>();
     const receivedEmail = route.params?.email || '';
+    const [loading, setLoading] = useState(false);
     const { control, handleSubmit, formState: { errors, isValid } } = useForm<RegisterCustomerForm>({
         mode: 'onChange',
         defaultValues: {
@@ -43,6 +45,7 @@ export default function RegisterCustomerScreen() {
 
     const handleRegisterCustomer = async (data: RegisterCustomerForm) => {
         try {
+            setLoading(true);
             const response = await registerCustomer(data);
             if (response === 201) {
                 Alert.alert("Cliente cadastrado com sucesso!");
@@ -52,6 +55,8 @@ export default function RegisterCustomerScreen() {
             }
         } catch (error) {
             Alert.alert("Algo deu errado.\nTente mais tarde!");
+        } finally {
+            setLoading(false); // Desativa o modal de loading
         }
     }
 
@@ -122,6 +127,7 @@ export default function RegisterCustomerScreen() {
                     <Button title="Cadastrar" onPress={handleSubmit(handleRegisterCustomer)} disabled={!isValid} />
                 </View>
             </View>
+            <LoadingModal visible={loading} />
         </View>
     );
 }
