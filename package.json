@@ -19,6 +19,7 @@
     "env-var": "^7.5.0",
     "expo": "~52.0.38",
     "expo-status-bar": "~2.0.1",
+    "food-connect-app": "file:",
     "react": "18.3.1",
     "react-hook-form": "^7.54.2",
     "react-native": "0.76.7",

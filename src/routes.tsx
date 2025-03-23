@@ -4,6 +4,7 @@ import Login from './pages/Login';
 import EmailValidation from './pages/EmailValidation';
 import SolicitacaoEmail from './pages/SolicitacaoEmail';
 import RegisterCustomerScreen from './pages/RegisterCustomerScreen';
+import AlterUser from './pages/AlterUser';
 // Importar outras telas conforme necessário
 
 const Stack = createStackNavigator();
@@ -16,6 +17,7 @@ export default function Routes() {
                 <Stack.Screen name="SolicitacaoEmail" component={SolicitacaoEmail} />
                 <Stack.Screen name="EmailValidation" component={EmailValidation} />
                 <Stack.Screen name="RegisterCustomerScreen" component={RegisterCustomerScreen} />
+                <Stack.Screen name="AlterUser" component={AlterUser} />
                 {/* Adicione outras telas aqui */}
             </Stack.Navigator>
         </NavigationContainer>
