@@ -1,22 +1,49 @@
-import React, { useState } from 'react';
-import { View, Text, TextInput } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TextInput, Alert } from 'react-native';
 import Button from "../../components/Button/button"; 
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import HeaderApp from '../../components/Header/header';
 import { style } from './styles';
-import ControlledTextInput from '../../components/Controller/ControlledTextInput';
+import { getCustomerData, updateCustomerData } from '../../api/clients/customerClient';
+import LoadingModal from "../../components/LoadingModal";
+
+type RootStackParamList = {
+    AlterUser: { email: string };
+};
+
+type AlterUserRouteProp = RouteProp<RootStackParamList, 'AlterUser'>;
 
 export default function AlterUser() {
-    const navigation = useNavigation();
+  const navigation = useNavigation();
+  const route = useRoute<AlterUserRouteProp>();
 
-     // Estados para armazenar os dados
-     const [name, setName] = useState('');
-     const [email, setEmail] = useState('');
-     const [phone, setPhone] = useState('');
-     const [password, setPassword] = useState('');
-     const [error, setError] = useState('');
+  // Mocando o email diretamente (substitua com o valor que você quer testar)
+  const email = 'gabriel@gmail.com'; // Mocando o valor do email aqui
 
-    const validatePassword = (text: string) => {
+  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState('');
+  const [phone, setPhone] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+      const fetchCustomerData = async () => {
+          try {
+              setLoading(true);
+              const customerData = await getCustomerData(email); // Usando o valor do email "mocado"
+              setName(customerData.name);
+              setPhone(customerData.phoneNumber);
+          } catch (error) {
+              Alert.alert("Erro ao buscar dados do cliente");
+          } finally {
+              setLoading(false);
+          }
+      };
+
+      fetchCustomerData();
+  }, [email]);
+
+  const validatePassword = (text: string) => {
       if (!text) {
           setError('Campo obrigatório');
       } else if (text.length < 6) {
@@ -27,34 +54,62 @@ export default function AlterUser() {
       setPassword(text);
   };
 
-    return (
-        <View style={style.container}>
-            <HeaderApp />
-            <View style={style.content}>
-                <Text style={style.title}>Alterar Dados:</Text>
+  const handleSaveChanges = async () => {
+      try {
+          setLoading(true);
+          const updatedCustomer = { name, email, phoneNumber: phone, password };
+          await updateCustomerData(updatedCustomer);
+          Alert.alert("Dados alterados com sucesso!");
+          navigation.goBack();
+      } catch (error) {
+          Alert.alert("Erro ao alterar dados do cliente");
+      } finally {
+          setLoading(false);
+      }
+  };
 
-                <TextInput style={style.input} placeholder="Digite seu nome completo" />
-                    
-                <TextInput style={style.input} placeholder="email@com" editable={false} />
+  return (
+      <View style={style.container}>
+          <HeaderApp />
+          <View style={style.content}>
+              <Text style={style.title}>Alterar Dados:</Text>
 
-                <TextInput style={style.input} placeholder="Digite seu número" />
+              <TextInput
+                  style={style.input}
+                  placeholder="Digite seu nome completo"
+                  value={name}
+                  onChangeText={setName}
+              />
+                  
+              <TextInput
+                  style={style.input}
+                  placeholder="email@com"
+                  value={email}  // Agora está usando o email "mocado"
+                  editable={false}
+              />
 
-                <TextInput
-                    style={[
-                        style.input,
-                        { borderColor: error ? 'red' : '#ccc' }, 
-                    ]}
-                    placeholder="Digite sua senha"
-                    secureTextEntry
-                    value={password}
-                    onChangeText={validatePassword}
-                />
-                {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
+              <TextInput
+                  style={style.input}
+                  placeholder="Digite seu número"
+                  value={phone}
+                  onChangeText={setPhone}
+              />
 
-                <View style={style.footer}>
-                    <Button title="Salvar Alterações" onPress={() => navigation.goBack()} />
-                </View>
-            </View>
-        </View>
-    );
+              <TextInput
+                  style={[style.input, { borderColor: error ? 'red' : '#ccc' }]}
+                  placeholder="Digite sua senha"
+                  secureTextEntry
+                  value={password}
+                  onChangeText={validatePassword}
+              />
+              {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
+
+              <View style={style.footer}>
+                  <Button title="Salvar Alterações" onPress={handleSaveChanges} />
+              </View>
+          </View>
+          <LoadingModal visible={loading} />
+      </View>
+  );
 }
+
