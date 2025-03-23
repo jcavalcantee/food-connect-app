@@ -1,12 +1,17 @@
 import { useRef } from 'react';
-import { View, TextInput, Text } from 'react-native';
-import { style } from "./styles"
+import { View, TextInput } from 'react-native';
+import { style } from "./styles";
 
-export default function TextInputCode() {
+interface TextInputCodeProps {
+    values: string[];
+    setValues: (index: number, value: string) => void;
+}
 
+export default function TextInputCode({ values, setValues }: TextInputCodeProps) {
     const inputRefs = useRef<TextInput[]>([]); // Cria referências para os inputs
 
     const handleChangeText = (text: string, index: number) => {
+        setValues(index, text);
         if (text.length === 1 && index < inputRefs.current.length - 1) {
             // Move o foco para o próximo input
             inputRefs.current[index + 1].focus();
@@ -25,6 +30,7 @@ export default function TextInputCode() {
                     style={style.textInputCode}
                     maxLength={1}
                     keyboardType="number-pad"
+                    value={values[index]}
                     onChangeText={(text) => handleChangeText(text, index)}
                 />
             ))}

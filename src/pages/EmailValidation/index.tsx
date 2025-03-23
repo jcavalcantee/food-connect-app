@@ -5,6 +5,9 @@ import { style } from "./styles"
 import HeaderApp from "../../components/Header/header"
 import ValidationCode from "../../components/TextInputCode/inputTextCode"
 import Button from "../../components/Button/button"
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { validateAccount } from "../../api/validation/apiValidation"
+import { sendValidationCode } from '../../api/email/apiEmailSender';
 
 type RootStackParamList = {
     EmailValidation: undefined;
@@ -18,7 +21,9 @@ interface Props {
 
 export default function EmailValidation() {
 
-    const [timeLeft, setTimeLeft] = useState(600); // 10 minutos em segundos
+    const [timeLeft, setTimeLeft] = useState(600);
+    const [codeValues, setCodeValues] = useState(['', '', '', '']);
+    const [email, setEmail] = useState<string>('');
 
     // Função para iniciar a contagem regressiva
     useEffect(() => {
@@ -38,13 +43,61 @@ export default function EmailValidation() {
         return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
     };
 
-    // Função para reenviar o código e reiniciar o timer
-    const handleResendCode = () => {
-        setTimeLeft(600); // Reseta para 10 minutos
-        console.log("Código reenviado!");
+    const handleResendCode = async () => {
+        try {
+            const response = await sendValidationCode(email);
+            if (response === 201) {
+                Alert.alert("Email reenviado com sucesso!");
+                setTimeLeft(600);
+                setCodeValues(['', '', '', '']);
+            } else {
+                Alert.alert("Erro no reenvio do email");
+            }
+        } catch (error) {
+            Alert.alert("Algo deu errado.\nTente mais tarde!");
+        }
+    }
+
+    useEffect(() => {
+        const getSavedEmail = async () => {
+            try {
+                const savedEmail = await AsyncStorage.getItem('email');
+                if (savedEmail) {
+                    setEmail(savedEmail);
+                }
+            } catch (e) {
+                console.error("Erro ao recuperar email", e);
+            }
+        };
+
+        getSavedEmail();
+    }, []);
+
+    const handleValidationAccount = async () => {
+        const code = codeValues.join('');
+        if (code.length !== 4) {
+            Alert.alert("Código de validação deve conter 4 dígitos.");
+            return;
+        }
+
+        try {
+            const response = await validateAccount(email, code);
+            if (response === 200) {
+                Alert.alert("Email validado com sucesso!");
+            } else {
+                Alert.alert("Erro na validação do email");
+            }
+        } catch (error) {
+            Alert.alert("Algo deu errado.\nTente mais tarde!");
+        }
+    }
+
+    const setCodeValue = (index: number, value: string) => {
+        const newCodeValues = [...codeValues];
+        newCodeValues[index] = value;
+        setCodeValues(newCodeValues);
     };
 
-    const handleValidationEmail = async () => { }
     return (
         <KeyboardAvoidingView
             behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -58,8 +111,7 @@ export default function EmailValidation() {
 
                     <Text style={style.title}>Valide seu E-mail</Text>
                     <Text style={style.info}>Informe o código recebido por e-mail para validar sua identidade.</Text>
-
-                    <ValidationCode />
+                    <ValidationCode values={codeValues} setValues={setCodeValue} />
 
                     <Text style={style.timer}>O código expira em {formatTime(timeLeft)}</Text>
 
@@ -72,7 +124,7 @@ export default function EmailValidation() {
             </ScrollView>
 
             <View style={style.footer}>
-                <Button onPress={handleValidationEmail} title='Confirmar' />
+                <Button onPress={handleValidationAccount} title='Confirmar' />
             </View>
 
         </KeyboardAvoidingView>
