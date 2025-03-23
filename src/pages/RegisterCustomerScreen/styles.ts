@@ -50,6 +50,17 @@ export const style = StyleSheet.create({
         backgroundColor: themas.colors.boxInputColor,
     },
 
+    inputMasked : {
+        width: "95%",
+        height: "45%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 50,
+        paddingHorizontal: 10,
+        marginTop: 5,
+        backgroundColor: themas.colors.boxInputColor,
+    },
+
     disabledInput: {
         width: "80%",
         height: "50%",
