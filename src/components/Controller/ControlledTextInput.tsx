@@ -2,7 +2,7 @@
 import React from "react";
 import { Controller } from "react-hook-form";
 import { View, Text, StyleSheet } from "react-native";
-import { style } from "../../pages/RegisterCustomerScreen.tsx/styles";
+import { style } from "../../pages/RegisterCustomerScreen/styles";
 import { TextInput } from "react-native";
 
 interface ControlledTextInputProps {
@@ -13,6 +13,8 @@ interface ControlledTextInputProps {
     rules?: any;
     secureTextEntry?: boolean;
     errorMessage?: string;
+    editable?: boolean;
+    style?: any;
 }
 
 export default function ControlledTextInput({ control, name, label, rules, errorMessage, ...textInputProps }: ControlledTextInputProps) {

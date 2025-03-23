@@ -12,7 +12,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
     EmailValidation: undefined;
-    RegisterCustomerScreen: undefined;
+    RegisterCustomerScreen: { email: string };
 };
 
 type EmailValidationNavigationProp = StackNavigationProp<RootStackParamList, 'EmailValidation'>;
@@ -82,7 +82,7 @@ export default function EmailValidation() {
             const response = await validateAccount(email, code);
             if (response === 200) {
                 Alert.alert("Email validado com sucesso!");
-                navigation.navigate('RegisterCustomerScreen')
+                navigation.navigate('RegisterCustomerScreen', { email });
             } else {
                 Alert.alert("Erro na validação do email");
             }
