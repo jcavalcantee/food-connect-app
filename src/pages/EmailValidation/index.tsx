@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { style } from "./styles"
 import HeaderApp from "../../components/Header/header"
@@ -13,10 +13,10 @@ type RootStackParamList = {
     EmailValidation: undefined;
 };
 
-type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'EmailValidation'>;
+type EmailValidationNavigationProp = StackNavigationProp<RootStackParamList, 'EmailValidation'>;
 
 interface Props {
-    navigation: HomeScreenNavigationProp;
+    navigation: EmailValidationNavigationProp;
 }
 
 export default function EmailValidation() {
