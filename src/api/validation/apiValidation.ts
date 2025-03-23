@@ -1,17 +1,14 @@
-import { Alert } from "react-native";
-import apiEmailSender from "../clients/emailClient";
+import apiValidation from "../clients/validationClient";
 
-export async function sendValidationCode(email: string) {
-    try {
-        if (!email.includes("@senacsp.edu.br") && !email.includes("@sp.senac.br")) {
-            Alert.alert("Domínio de email inválido.");
-            throw new Error("Domínio de email inválido.");
-        }
-        console.info("Email enviado para: ", email);
-        const response = await apiEmailSender.post(`/send-email?email=${email}`);
-        console.info("URL API: ", apiEmailSender.defaults.baseURL);
+export async function validateAccount(email: string, code: string) {
+    try {   
+        const response = await apiValidation.post('/code-validation', {
+            email: email,
+            code: code
+        });
+        console.info("URL API: ", apiValidation.defaults.baseURL);
 
-        if (response.status === 201) {
+        if (response.status === 200) {
             console.info(response.data);
             return response.status; 
         } else {
