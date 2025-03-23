@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, TouchableOpacity, Alert } from 'react-native';
-
+import { View, Text, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, TouchableOpacity } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
 import { style } from "./styles"
 import HeaderApp from "../../components/Header/header"
 import ValidationCode from "../../components/TextInputCode/inputTextCode"
@@ -8,6 +8,16 @@ import Button from "../../components/Button/button"
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { validateAccount } from "../../api/validation/apiValidation"
 import { sendValidationCode } from '../../api/email/apiEmailSender';
+
+type RootStackParamList = {
+    EmailValidation: undefined;
+};
+
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'EmailValidation'>;
+
+interface Props {
+    navigation: HomeScreenNavigationProp;
+}
 
 export default function EmailValidation() {
 
@@ -101,7 +111,6 @@ export default function EmailValidation() {
 
                     <Text style={style.title}>Valide seu E-mail</Text>
                     <Text style={style.info}>Informe o código recebido por e-mail para validar sua identidade.</Text>
-
                     <ValidationCode values={codeValues} setValues={setCodeValue} />
 
                     <Text style={style.timer}>O código expira em {formatTime(timeLeft)}</Text>

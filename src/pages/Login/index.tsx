@@ -1,13 +1,28 @@
 import { useState } from 'react';
-import { View, Text, Alert } from 'react-native';
+import { View, Text, Alert, TouchableOpacity } from 'react-native';
 import { style } from "./styles";
 import Button from "../../components/Button/button";
 import TextInputForms from "../../components/TextInput/inputTextForms";
 import HeaderApp from "../../components/Header/header";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { ACCESS_IP_API } from '@env';
+
+// Definir as telas disponíveis na navegação
+type RootStackParamList = {
+    Login: undefined;
+    EmailValidation: undefined;
+};
+
+// Tipar corretamente a navegação
+type NavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
 
 export default function Login() {
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
+
+    // Usar o hook com tipagem correta
+    const navigation = useNavigation<NavigationProp>();
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -16,7 +31,7 @@ export default function Login() {
         }
 
         try {
-            const response = await fetch('http://192.168.100.85:8082/CustomerLogin', {
+            const response = await fetch(`${ACCESS_IP_API}:8082/CustomerLogin`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email, password })
@@ -24,11 +39,7 @@ export default function Login() {
 
             const data = await response.json();
 
-            if (response.ok) {
-                Alert.alert(data.status, data.message);
-            } else {
-                Alert.alert(data.status, data.message);
-            }
+            Alert.alert(data.status, data.message);
         } catch (error) {
             Alert.alert("Erro", "Erro ao conectar com o servidor" + error);
         }
@@ -40,12 +51,16 @@ export default function Login() {
             <View style={style.content}>
                 <Text style={style.title}>Bem Vindo!</Text>
                 <Text style={style.info}>Informe suas credenciais para validação.</Text>
-                <TextInputForms placeholder="Digite seu e-mail" value={email} onChangeText={setEmail}/>
-                <TextInputForms placeholder='Digite sua senha' value={password} onChangeText={setPassword}/>
+                <TextInputForms placeholder="Digite seu e-mail" value={email} onChangeText={setEmail} />
+                <TextInputForms placeholder='Digite sua senha' value={password} onChangeText={setPassword} />
                 <View style={style.footer}>
-                    <Button onPress={handleLogin} title='Entrar'/>
+                    <Button onPress={handleLogin} title='Entrar' />
                 </View>
-                <Text style={style.cadastrese}>Cadastre-se aqui</Text>
+                
+                {/* Navegação corrigida */}
+                <TouchableOpacity onPress={() => navigation.navigate('EmailValidation')}>
+                    <Text style={style.cadastrese}>Cadastre-se aqui</Text>
+                </TouchableOpacity>
             </View>
         </View>
     );
