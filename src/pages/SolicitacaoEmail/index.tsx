@@ -35,7 +35,7 @@ export default function Header() {
         try {
             await AsyncStorage.setItem('email', email)
             setSavedValue(email);
-            console.warn(`Email enviado com sucesso para: ${email}`)
+            console.info(`Email enviado com sucesso para: ${email}`)
         } catch (e) {
             console.error("Erro ao salvar email", e)
         };
