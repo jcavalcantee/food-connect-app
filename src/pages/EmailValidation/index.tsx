@@ -1,10 +1,20 @@
 import { useState, useEffect } from 'react';
 import { View, Text, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard, ScrollView, TouchableOpacity } from 'react-native';
-
+import { StackNavigationProp } from '@react-navigation/stack';
 import { style } from "./styles"
 import HeaderApp from "../../components/Header/header"
 import ValidationCode from "../../components/TextInputCode/inputTextCode"
 import Button from "../../components/Button/button"
+
+type RootStackParamList = {
+    EmailValidation: undefined;
+};
+
+type HomeScreenNavigationProp = StackNavigationProp<RootStackParamList, 'EmailValidation'>;
+
+interface Props {
+    navigation: HomeScreenNavigationProp;
+}
 
 export default function EmailValidation() {
 
@@ -37,34 +47,34 @@ export default function EmailValidation() {
     const handleValidationEmail = async () => { }
     return (
         <KeyboardAvoidingView
-            behavior={Platform.OS === "ios" ? "padding" : "height"} 
+            behavior={Platform.OS === "ios" ? "padding" : "height"}
             style={style.container}
         >
             <HeaderApp />
 
-            <ScrollView style={{flex: 1}}>
+            <ScrollView style={{ flex: 1 }}>
 
-            <View style={style.content}>
+                <View style={style.content}>
 
                     <Text style={style.title}>Valide seu E-mail</Text>
                     <Text style={style.info}>Informe o código recebido por e-mail para validar sua identidade.</Text>
 
-                <ValidationCode/>
+                    <ValidationCode />
 
-                <Text style={style.timer}>O código expira em {formatTime(timeLeft)}</Text>
-                
-                <TouchableOpacity onPress={handleResendCode}>
-                    <Text style={style.reenviarEmail}>Reenviar Código</Text>
-                </TouchableOpacity>
+                    <Text style={style.timer}>O código expira em {formatTime(timeLeft)}</Text>
 
-            </View>
+                    <TouchableOpacity onPress={handleResendCode}>
+                        <Text style={style.reenviarEmail}>Reenviar Código</Text>
+                    </TouchableOpacity>
+
+                </View>
 
             </ScrollView>
 
             <View style={style.footer}>
                 <Button onPress={handleValidationEmail} title='Confirmar' />
             </View>
-            
+
         </KeyboardAvoidingView>
     );
 }
