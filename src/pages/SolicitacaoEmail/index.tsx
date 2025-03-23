@@ -21,7 +21,7 @@ type SolicitacaoEmailNavigationProp = StackNavigationProp<RootStackParamList, 'S
 export default function SolicitacaoEmail() {
     const [email, setEmail] = useState<string>('');
     const [savedValue, setSavedValue] = useState('');
-    const [loading, setLoading] = useState(false); // Estado do modal de loading
+    const [loading, setLoading] = useState(false); 
     
     const navigation = useNavigation<SolicitacaoEmailNavigationProp>();
 
@@ -32,20 +32,18 @@ export default function SolicitacaoEmail() {
         }
 
         try {
-            setLoading(true); // Ativa o modal de loading
+            setLoading(true); 
             const response = await sendValidationCode(email);
 
             if (response === 201) {
                 Alert.alert("Email enviado com sucesso!");
                 await saveValue(email);
                 navigation.navigate('EmailValidation');
-            } else {
-                Alert.alert("Erro no envio do email");
-            }
+            } 
         } catch (error) {
             Alert.alert("Algo deu errado.\nTente mais tarde!");
         } finally {
-            setLoading(false); // Desativa o modal de loading
+            setLoading(false); 
         }
     };
 
@@ -90,7 +88,12 @@ export default function SolicitacaoEmail() {
                 {loading ? (
                     <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
-                    <Button onPress={handleValidationEmail} title='Confirmar' />
+                    <Button 
+                        onPress={handleValidationEmail} 
+                        title='Confirmar' 
+                        disabled={false}
+                        style={{ height: '10%'}}
+                    />
                 )}
 
                 <TouchableOpacity onPress={() => navigation.navigate('Login')}>
