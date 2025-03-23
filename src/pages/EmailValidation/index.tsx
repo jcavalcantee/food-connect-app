@@ -12,7 +12,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
     EmailValidation: undefined;
-    RegisterCustomerScreen: undefined;
+    RegisterCustomerScreen: { email: string };
+    SolicitacaoEmail: undefined;
 };
 
 type EmailValidationNavigationProp = StackNavigationProp<RootStackParamList, 'EmailValidation'>;
@@ -22,16 +23,20 @@ export default function EmailValidation() {
     const [timeLeft, setTimeLeft] = useState(600);
     const [codeValues, setCodeValues] = useState(['', '', '', '']);
     const [email, setEmail] = useState<string>('');
+    const [cooldown, setCooldown] = useState(false);
+    const [buttonText, setButtonText] = useState('Reenviar Código');
 
-    // Função para iniciar a contagem regressiva
     useEffect(() => {
-        if (timeLeft <= 0) return; // Para quando chegar a 0
+        if (timeLeft <= 0) {
+            navigation.navigate('SolicitacaoEmail');
+            return;
+        }
 
         const timer = setInterval(() => {
             setTimeLeft(prevTime => prevTime - 1);
         }, 1000);
 
-        return () => clearInterval(timer); // Limpa o timer ao desmontar o componente
+        return () => clearInterval(timer); 
     }, [timeLeft]);
 
     // Formata o tempo para mm:ss
@@ -42,14 +47,25 @@ export default function EmailValidation() {
     };
 
     const handleResendCode = async () => {
+        if (cooldown) {
+            Alert.alert("Por favor, aguarde antes de reenviar o código.");
+            return;
+        }
+
         try {
             const response = await sendValidationCode(email);
             if (response === 201) {
-                Alert.alert("Email reenviado com sucesso!");
+                Alert.alert("Código reenviado com sucesso!");
                 setTimeLeft(600);
                 setCodeValues(['', '', '', '']);
+                setCooldown(true);
+                setButtonText('Espere 5 minutos antes de reenviar o código novamente.');
+                setTimeout(() => {
+                    setCooldown(false);
+                    setButtonText('Reenviar Código');
+                }, 300000); // Define um cooldown de 5 minutos (300000 ms)
             } else {
-                Alert.alert("Erro no reenvio do email");
+                Alert.alert("Erro no reenvio do código");
             }
         } catch (error) {
             Alert.alert("Algo deu errado.\nTente mais tarde!");
@@ -82,7 +98,7 @@ export default function EmailValidation() {
             const response = await validateAccount(email, code);
             if (response === 200) {
                 Alert.alert("Email validado com sucesso!");
-                navigation.navigate('RegisterCustomerScreen')
+                navigation.navigate('RegisterCustomerScreen', { email });
             } else {
                 Alert.alert("Erro na validação do email");
             }
@@ -114,8 +130,8 @@ export default function EmailValidation() {
 
                     <Text style={style.timer}>O código expira em {formatTime(timeLeft)}</Text>
 
-                    <TouchableOpacity onPress={handleResendCode}>
-                        <Text style={style.reenviarEmail}>Reenviar Código</Text>
+                    <TouchableOpacity onPress={handleResendCode} disabled={cooldown}>
+                        <Text style={style.reenviarEmail}>{buttonText}</Text>
                     </TouchableOpacity>
 
                 </View>
@@ -123,7 +139,12 @@ export default function EmailValidation() {
             </ScrollView>
 
             <View style={style.footer}>
-                <Button onPress={handleValidationAccount} title='Confirmar' />
+                <Button 
+                    onPress={handleValidationAccount} 
+                    title='Confirmar' 
+                    disabled={false}
+                    style={{ height: '30%'}}
+                />
             </View>
 
         </KeyboardAvoidingView>

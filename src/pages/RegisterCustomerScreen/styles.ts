@@ -1,4 +1,5 @@
 import { StyleSheet } from 'react-native';
+import { themas } from '../../global/themas';
 
 export const style = StyleSheet.create({
     container: {
@@ -46,6 +47,29 @@ export const style = StyleSheet.create({
         borderRadius: 50,
         paddingHorizontal: 10,
         marginTop: 5,
+        backgroundColor: themas.colors.boxInputColor,
+    },
+
+    inputMasked : {
+        width: "95%",
+        height: "45%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 50,
+        paddingHorizontal: 10,
+        marginTop: 5,
+        backgroundColor: themas.colors.boxInputColor,
+    },
+
+    disabledInput: {
+        width: "80%",
+        height: "50%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 50,
+        paddingHorizontal: 10,
+        marginTop: 5,
+        backgroundColor: "#C0C0C0",
     },
 
     footer: {
