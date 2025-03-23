@@ -3,7 +3,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import Login from './pages/Login';
 import EmailValidation from './pages/EmailValidation';
 import SolicitacaoEmail from './pages/SolicitacaoEmail';
-import RegisterCustomerScreen from './pages/RegisterCustomerScreen.tsx';
+import RegisterCustomerScreen from './pages/RegisterCustomerScreen';
 // Importar outras telas conforme necessário
 
 const Stack = createStackNavigator();

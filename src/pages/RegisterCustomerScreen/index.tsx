@@ -1,3 +1,4 @@
+// filepath: src/pages/RegisterCustomerScreen/index.tsx
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { View, Text, Alert } from "react-native";
@@ -6,17 +7,18 @@ import { style } from "./styles";
 import ControlledTextInput from "../../components/Controller/ControlledTextInput";
 import Button from "../../components/Button/button"; 
 import { registerCustomer } from '../../api/register/apiRegisterCustomer';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-
-// Definir as telas disponíveis na navegação
-type RootStackParamList = {
-    RegisterCustomerScreen: undefined;
-    Login: undefined;
-};
 
 // Tipar corretamente a navegação
 type NavigationProp = StackNavigationProp<RootStackParamList, 'RegisterCustomerScreen'>;
+
+type RootStackParamList = {
+    RegisterCustomerScreen: { email?: string };
+    Login: undefined;
+};
+
+type RegisterCustomerRouteProp = RouteProp<RootStackParamList, 'RegisterCustomerScreen'>;
 
 type RegisterCustomerForm = {
     name: string;
@@ -27,11 +29,13 @@ type RegisterCustomerForm = {
 
 export default function RegisterCustomerScreen() {
     const navigation = useNavigation<NavigationProp>();
+    const route = useRoute<RegisterCustomerRouteProp>();
+    const receivedEmail = route.params?.email || '';
     const { control, handleSubmit, formState: { errors, isValid } } = useForm<RegisterCustomerForm>({
         mode: 'onChange',
         defaultValues: {
             name: '',
-            email: '',
+            email: receivedEmail,
             password: '',
             phoneNumber: '',
         },
@@ -79,6 +83,8 @@ export default function RegisterCustomerScreen() {
                     placeholder="Digite seu e-mail"
                     label="E-mail"
                     errorMessage={errors.email?.message}
+                    editable={false}
+                    style={style.disabledInput}
                 />
 
                 <ControlledTextInput
