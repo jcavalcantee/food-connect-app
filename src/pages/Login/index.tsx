@@ -11,7 +11,7 @@ import { ACCESS_IP_API } from '@env';
 // Definir as telas disponíveis na navegação
 type RootStackParamList = {
     Login: undefined;
-    EmailValidation: undefined;
+    SolicitacaoEmail: undefined;
 };
 
 // Tipar corretamente a navegação
@@ -58,7 +58,7 @@ export default function Login() {
                 </View>
                 
                 {/* Navegação corrigida */}
-                <TouchableOpacity onPress={() => navigation.navigate('EmailValidation')}>
+                <TouchableOpacity onPress={() => navigation.navigate('SolicitacaoEmail')}>
                     <Text style={style.cadastrese}>Cadastre-se aqui</Text>
                 </TouchableOpacity>
             </View>

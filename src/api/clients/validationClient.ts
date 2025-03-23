@@ -1,7 +1,8 @@
 import axios from "axios";
+import { ACCESS_IP_API } from '@env';
 
 const clientValidation = axios.create({
-    baseURL: "http://192.168.0.20:8080",
+    baseURL: `${ACCESS_IP_API}:8080`,
     timeout: 15000
 });
 
