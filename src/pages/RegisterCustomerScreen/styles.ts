@@ -21,15 +21,30 @@ export const style = StyleSheet.create({
         alignSelf: "flex-start",
     },
 
-    inputContainer: {
-        width: "120%",
-        height: "50%",
-    },
-
     label: {
         fontSize: 14,
         fontWeight: "bold",
         color: "#555",
+    },
+
+    footer: {
+        width: "100%",
+        alignItems: "center",
+    },
+
+    inputMasked: {
+        width: "95%",
+        height: "25%",
+        borderWidth: 1,
+        borderColor: "#ccc",
+        borderRadius: 50,
+        paddingHorizontal: 10,
+        marginTop: 5,
+        backgroundColor: themas.colors.boxInputColor,
+    },
+
+    senha: {
+        marginTop: '6%',
     },
 
     errorText: {
@@ -37,43 +52,5 @@ export const style = StyleSheet.create({
         fontSize: 12,
         textAlign: "left",
         width: "100%",
-    },
-
-    input: {
-        width: "80%",
-        height: "50%",
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 50,
-        paddingHorizontal: 10,
-        marginTop: 5,
-        backgroundColor: themas.colors.boxInputColor,
-    },
-
-    inputMasked : {
-        width: "95%",
-        height: "45%",
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 50,
-        paddingHorizontal: 10,
-        marginTop: 5,
-        backgroundColor: themas.colors.boxInputColor,
-    },
-
-    disabledInput: {
-        width: "80%",
-        height: "50%",
-        borderWidth: 1,
-        borderColor: "#ccc",
-        borderRadius: 50,
-        paddingHorizontal: 10,
-        marginTop: 5,
-        backgroundColor: "#C0C0C0",
-    },
-
-    footer: {
-        width: "100%",
-        alignItems: "center",
     },
 });

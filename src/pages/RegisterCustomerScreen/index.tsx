@@ -1,15 +1,15 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { View, Text, Alert, TextInput } from "react-native";
+import { View, Text, Alert } from "react-native";
 import HeaderApp from "../../components/Header/header";
 import { style } from "./styles";
 import ControlledTextInput from "../../components/Controller/ControlledTextInput";
-import Button from "../../components/Button/button"; 
+import Button from "../../components/Button/button";
 import { registerCustomer } from '../../api/register/apiRegisterCustomer';
 import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
-import LoadingModal from "../../components/LoadingModal"; 
-import { phoneApplyMask } from "../../utils/masks/phone-mask";
+import LoadingModal from "../../components/LoadingModal";
+import { TextInputMask } from 'react-native-masked-text'; // Importando a biblioteca de máscara
 
 // Tipos da navegação
 type NavigationProp = StackNavigationProp<RootStackParamList, 'RegisterCustomerScreen'>;
@@ -31,7 +31,6 @@ export default function RegisterCustomerScreen() {
     const route = useRoute<RegisterCustomerRouteProp>();
     const receivedEmail = route.params?.email || '';
     const [loading, setLoading] = useState(false);
-    const [phoneInput, setPhoneInput] = useState(""); // Estado para armazenar telefone
 
     const { control, handleSubmit, setValue, formState: { errors, isValid } } = useForm<RegisterCustomerForm>({
         mode: 'onChange',
@@ -43,15 +42,7 @@ export default function RegisterCustomerScreen() {
         },
     });
 
-    // Manipula a mudança no telefone
-    const handlePhoneChange = (text: string) => {
-        const cleanedText = text.replace(/\D/g, ""); // Remove não numéricos
-        setPhoneInput(cleanedText); // Atualiza estado interno sem máscara
-        if (cleanedText.length === 11) {
-            setValue("phoneNumber", cleanedText); // Seta valor sem máscara no form
-        }
-    };
-
+    // Função para registrar o cliente
     const handleRegisterCustomer = async (data: RegisterCustomerForm) => {
         try {
             setLoading(true);
@@ -69,7 +60,7 @@ export default function RegisterCustomerScreen() {
                 Alert.alert("Erro no cadastro do cliente!");
             }
         } catch (error) {
-            Alert.alert("Algo deu errado.\nTente mais tarde!");
+            console.error("Erro ao cadastrar cliente:", error);
         } finally {
             setLoading(false);
         }
@@ -104,21 +95,37 @@ export default function RegisterCustomerScreen() {
                     label="E-mail"
                     errorMessage={errors.email?.message}
                     editable={false}
-                    style={style.disabledInput}
                 />
 
-                {/* Input de telefone sem mascarar até atingir 11 dígitos */}
-                <View>
-                    <Text style={style.label}>Telefone</Text>
-                    <TextInput
-                        keyboardType="numeric"
-                        placeholder="(99) 99999-9999"
-                        style={style.inputMasked}
-                        value={phoneApplyMask(phoneInput)} // Aplica máscara apenas quando necessário
-                        onChangeText={handlePhoneChange} // Manipula a mudança no telefone
-                    />
-                    {errors.phoneNumber && <Text style={style.errorText}>{errors.phoneNumber.message}</Text>}
-                </View>
+                <Text style={style.label}>{'Telefone'}</Text>
+                <Controller
+                    control={control}
+                    name="phoneNumber"
+                    rules={{
+                        required: "Campo obrigatório",
+                        minLength: {
+                            value: 15,
+                            message: "O telefone deve ter pelo menos 11 dígitos"
+                        },
+                    }}
+                    render={({ field: { onChange, onBlur, value } }) => (
+                        <TextInputMask
+                            type={'custom'}
+                            options={{
+                                mask: '(99) 99999-9999'
+                            }}
+                            value={value}
+                            onChangeText={(maskedValue) => onChange(maskedValue)}
+                            onBlur={onBlur}
+                            placeholder="(99) 99999-9999"
+                            keyboardType="numeric"
+                            style={style.inputMasked}
+                        />
+                    )}
+                />
+                {errors.phoneNumber && <Text style={style.errorText}>{errors.phoneNumber?.message}</Text>}
+
+                <Text style={style.senha}></Text>
 
                 <ControlledTextInput
                     control={control}
@@ -137,7 +144,7 @@ export default function RegisterCustomerScreen() {
                 />
 
                 <View style={style.footer}>
-                    <Button title="Cadastrar" onPress={handleSubmit(handleRegisterCustomer)} disabled={!isValid} />
+                    <Button title="Cadastrar" onPress={handleSubmit(handleRegisterCustomer)} />
                 </View>
             </View>
             <LoadingModal visible={loading} />

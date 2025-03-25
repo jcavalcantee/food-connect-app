@@ -25,13 +25,20 @@ export async function registerCustomer(customer: RegisterCustomerForm) {
         }
     } catch (error: any) {
         if (error.response) {
-            console.error("Erro de resposta do servidor:", error.response.data);
-            console.error("Status code:", error.response.status);
-            console.error("Headers:", error.response.headers);
+            if (error.response.status === 409) {
+                Alert.alert("Erro", error.response.data.message);
+            } else {
+                console.error("Erro de resposta do servidor:", error.response.data);
+                console.error("Status code:", error.response.status);
+                console.error("Headers:", error.response.headers);
+                Alert.alert("Erro", "Erro de resposta do servidor.");
+            }
         } else if (error.request) {
             console.error("Resposta não recebida:", error.request);
+            Alert.alert("Erro", "Resposta não recebida do servidor.");
         } else {
             console.error("Erro na requisição:", error.message);
+            Alert.alert("Erro", "Erro na requisição.");
         }
         console.error("Config:", error.config);
         throw error;
