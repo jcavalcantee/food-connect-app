@@ -7,7 +7,7 @@ export const style = StyleSheet.create({
         height: '13%',
         borderRadius: 15,
         backgroundColor: themas.colors.boxInputColor,
-        marginTop: '15%',
+        marginTop: '10%',
         paddingLeft: '4%'
     }
 })
