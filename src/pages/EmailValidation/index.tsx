@@ -22,7 +22,7 @@ type EmailValidationNavigationProp = StackNavigationProp<RootStackParamList, 'Em
 export default function EmailValidation() {
     const navigation = useNavigation<EmailValidationNavigationProp>();
     const isFocused = useIsFocused();
-    const [timeLeft, setTimeLeft] = useState(60);
+    const [timeLeft, setTimeLeft] = useState(600);
     const [codeValues, setCodeValues] = useState(['', '', '', '']);
     const [email, setEmail] = useState<string>('');
     const [cooldown, setCooldown] = useState(false);
@@ -61,10 +61,10 @@ export default function EmailValidation() {
             const response = await sendValidationCode(email);
             if (response === 201) {
                 Alert.alert("Código reenviado com sucesso!");
-                setTimeLeft(60);
+                setTimeLeft(600);
                 setCodeValues(['', '', '', '']);
                 setCooldown(true);
-                setCooldownTimeLeft(300); // Define o tempo de cooldown para 5 minutos (300 segundos)
+                setCooldownTimeLeft(300);
                 const cooldownTimer = setInterval(() => {
                     setCooldownTimeLeft(prevTime => {
                         if (prevTime <= 1) {
@@ -116,8 +116,10 @@ export default function EmailValidation() {
             } else {
                 Alert.alert("Erro na validação do email");
             }
-        } catch (error) {
-            Alert.alert("Algo deu errado.\nTente mais tarde!");
+        } catch (error: any) {
+            if(error.response && error.response.status === 400) {
+                Alert.alert("O Código de validação fornecido não é válido.");
+            }
         } finally {
             setLoading(false);
         }
