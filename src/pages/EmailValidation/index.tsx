@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { View, Text, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, KeyboardAvoidingView, Platform, Alert, ScrollView, TouchableOpacity, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { style } from "./styles"
 import HeaderApp from "../../components/Header/header"
@@ -7,8 +7,9 @@ import ValidationCode from "../../components/TextInputCode/inputTextCode"
 import Button from "../../components/Button/button"
 import { validateAccount } from "../../api/validation/apiValidation"
 import { sendValidationCode } from '../../api/email/apiEmailSender';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import LoadingModal from '../../components/LoadingModal';
 
 type RootStackParamList = {
     EmailValidation: undefined;
@@ -20,14 +21,16 @@ type EmailValidationNavigationProp = StackNavigationProp<RootStackParamList, 'Em
 
 export default function EmailValidation() {
     const navigation = useNavigation<EmailValidationNavigationProp>();
-    const [timeLeft, setTimeLeft] = useState(600);
+    const isFocused = useIsFocused();
+    const [timeLeft, setTimeLeft] = useState(60);
     const [codeValues, setCodeValues] = useState(['', '', '', '']);
     const [email, setEmail] = useState<string>('');
     const [cooldown, setCooldown] = useState(false);
-    const [buttonText, setButtonText] = useState('Reenviar Código');
+    const [cooldownTimeLeft, setCooldownTimeLeft] = useState(0);
+    const [loading, setLoading] = useState(false);
 
     useEffect(() => {
-        if (timeLeft <= 0) {
+        if (timeLeft <= 0 && isFocused) {
             navigation.navigate('SolicitacaoEmail');
             return;
         }
@@ -37,7 +40,7 @@ export default function EmailValidation() {
         }, 1000);
 
         return () => clearInterval(timer); 
-    }, [timeLeft]);
+    }, [timeLeft, isFocused]);
 
     // Formata o tempo para mm:ss
     const formatTime = (seconds: number) => {
@@ -48,27 +51,37 @@ export default function EmailValidation() {
 
     const handleResendCode = async () => {
         if (cooldown) {
-            Alert.alert("Por favor, aguarde antes de reenviar o código.");
+            Alert.alert(`Tempo restante para reenvio de código: ${formatTime(cooldownTimeLeft)} minutos`);
             return;
         }
+
+        setLoading(true);
 
         try {
             const response = await sendValidationCode(email);
             if (response === 201) {
                 Alert.alert("Código reenviado com sucesso!");
-                setTimeLeft(600);
+                setTimeLeft(60);
                 setCodeValues(['', '', '', '']);
                 setCooldown(true);
-                setButtonText('Espere 5 minutos antes de reenviar o código novamente.');
-                setTimeout(() => {
-                    setCooldown(false);
-                    setButtonText('Reenviar Código');
-                }, 300000); // Define um cooldown de 5 minutos (300000 ms)
+                setCooldownTimeLeft(300); // Define o tempo de cooldown para 5 minutos (300 segundos)
+                const cooldownTimer = setInterval(() => {
+                    setCooldownTimeLeft(prevTime => {
+                        if (prevTime <= 1) {
+                            clearInterval(cooldownTimer);
+                            setCooldown(false);
+                            return 0;
+                        }
+                        return prevTime - 1;
+                    });
+                }, 1000);
             } else {
                 Alert.alert("Erro no reenvio do código");
             }
         } catch (error) {
             Alert.alert("Algo deu errado.\nTente mais tarde!");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -95,6 +108,7 @@ export default function EmailValidation() {
         }
 
         try {
+            setLoading(true);
             const response = await validateAccount(email, code);
             if (response === 200) {
                 Alert.alert("Email validado com sucesso!");
@@ -104,6 +118,8 @@ export default function EmailValidation() {
             }
         } catch (error) {
             Alert.alert("Algo deu errado.\nTente mais tarde!");
+        } finally {
+            setLoading(false);
         }
     }
 
@@ -130,9 +146,11 @@ export default function EmailValidation() {
 
                     <Text style={style.timer}>O código expira em {formatTime(timeLeft)}</Text>
 
-                    <TouchableOpacity onPress={handleResendCode} disabled={cooldown}>
-                        <Text style={style.reenviarEmail}>{buttonText}</Text>
+                    <TouchableOpacity onPress={handleResendCode}>
+                        <Text style={style.reenviarEmail}>Reenviar código</Text>
                     </TouchableOpacity>
+
+                    {loading && <ActivityIndicator size="small" color="#FFFFFF" />}
 
                 </View>
 
@@ -146,6 +164,7 @@ export default function EmailValidation() {
                     style={{ height: '30%'}}
                 />
             </View>
+            <LoadingModal visible={loading} />
 
         </KeyboardAvoidingView>
     );
