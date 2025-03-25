@@ -1,5 +1,6 @@
 import { Alert } from "react-native";
 import apiEmailSender from "../clients/emailClient";
+import { ACCESS_IP_API } from "@env";
 
 export async function sendValidationCode(email: string) {
     const validDomains = /@(senacsp\.edu\.br|sp\.senac\.br)$/;
@@ -11,6 +12,7 @@ export async function sendValidationCode(email: string) {
 
     try {
         console.info("Email enviado para: ", email);
+        console.info("Batendo no IP:", ACCESS_IP_API)
         const response = await apiEmailSender.post(`/send-email?email=${email}`);
         console.info("URL API: ", apiEmailSender.defaults.baseURL);
 
