@@ -10,7 +10,7 @@ export const styles = StyleSheet.create({
     container: {
         paddingTop: statusBarHeight,
         height: '55%',
-        // backgroundColor: 'darkorange',
+        backgroundColor: '#fff',
         // alignItems: 'center',
         flexDirection: 'row',
         
@@ -18,13 +18,13 @@ export const styles = StyleSheet.create({
         paddingHorizontal: '5%'
     },
     imageLogo: {
-        width: '50%',
+        width: '40%',
         height: '80%',
     },
     subheader: {
         height: '35%',
         width: '100%',
-        // backgroundColor: 'lightblue',
+        backgroundColor: '#fff',
         alignItems: 'center',
     },
     imageCarrosel: {
@@ -36,6 +36,7 @@ export const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         marginLeft: '5%',
-        paddingBottom: '2%'
+        paddingBottom: '2%',
+        backgroundColor: '#fff'
     }
 })

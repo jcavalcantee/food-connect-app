@@ -5,7 +5,8 @@ export const themas = {
         primary: '#F31C1C',
         boxInputColor: '#d3d3d3',
         whiteText: '#F0F0F0',
-        lightGray: '#B5B5B5',
+        lightGrayForText: '#B5B5B5',
+        lightGrayForSeparator: '#EEEEEE',
     },
 
     dimensions: {
