@@ -4,7 +4,7 @@ import { themas } from '../../global/themas';
 export const styles = StyleSheet.create({
     footer: {
         width: themas.dimensions.width,
-        height: '10%',
+        height: '8%',
         backgroundColor: themas.colors.primary,
         alignItems: 'center',
         justifyContent: 'space-around',
