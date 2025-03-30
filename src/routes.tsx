@@ -14,8 +14,8 @@ export default function Routes() {
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="Login" component={Login} />
+                <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="SolicitacaoEmail" component={SolicitacaoEmail} />
                 <Stack.Screen name="EmailValidation" component={EmailValidation} />
                 <Stack.Screen name="RegisterCustomerScreen" component={RegisterCustomerScreen} />

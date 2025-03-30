@@ -1,47 +1,45 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Alert } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Button from "../../components/Button/button"; 
-import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import HeaderApp from '../../components/Header/header';
 import { style } from './styles';
 import { getCustomerData, updateCustomerData } from '../../api/clients/customerClient';
 import LoadingModal from "../../components/LoadingModal";
-
-type RootStackParamList = {
-    AlterUser: { email: string };
-};
-
-type AlterUserRouteProp = RouteProp<RootStackParamList, 'AlterUser'>;
+import { updatePassword } from '../../api/clients/customerClient';
 
 export default function AlterUser() {
   const navigation = useNavigation();
-  const route = useRoute<AlterUserRouteProp>();
-
-  // Mocando o email diretamente (substitua com o valor que você quer testar)
-  const email = 'gabriel@gmail.com'; // Mocando o valor do email aqui
-
   const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
   useEffect(() => {
-      const fetchCustomerData = async () => {
-          try {
-              setLoading(true);
-              const customerData = await getCustomerData(email); // Usando o valor do email "mocado"
-              setName(customerData.name);
-              setPhone(customerData.phoneNumber);
-          } catch (error) {
-              Alert.alert("Erro ao buscar dados do cliente");
-          } finally {
-              setLoading(false);
-          }
-      };
+    const fetchCustomerData = async () => {
+        try {
+            setLoading(true);
 
-      fetchCustomerData();
-  }, [email]);
+            const userInfoString = await AsyncStorage.getItem("userInfo");
+            if (userInfoString) {
+                const userInfo = JSON.parse(userInfoString); // Convertendo de volta para objeto
+                
+                setEmail(userInfo.email);
+                setName(userInfo.name);
+                setPhone(userInfo.cellphoneNumber);
+            }
+        } catch (error) {
+            Alert.alert("Erro", "Erro ao buscar dados do cliente");
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    fetchCustomerData();
+}, []);
 
   const validatePassword = (text: string) => {
       if (!text) {
@@ -55,18 +53,29 @@ export default function AlterUser() {
   };
 
   const handleSaveChanges = async () => {
-      try {
-          setLoading(true);
-          const updatedCustomer = { name, email, phoneNumber: phone, password };
-          await updateCustomerData(updatedCustomer);
-          Alert.alert("Dados alterados com sucesso!");
-          navigation.goBack();
-      } catch (error) {
-          Alert.alert("Erro ao alterar dados do cliente");
-      } finally {
-          setLoading(false);
-      }
-  };
+
+    try {
+        setLoading(true);
+
+        // Atualiza os dados do cliente
+        const updatedCustomer = { name, email, phoneNumber: phone };
+        await updateCustomerData(updatedCustomer);
+
+        if (password.trim() !== '') {
+            await updatePassword({ email, password });
+        }
+        // Se a senha foi alterada, atualiza a senha
+
+        Alert.alert("Dados atualizados com sucesso!");
+        navigation.goBack();
+    } catch (error) {
+        Alert.alert("Erro ao atualizar os dados do cliente");
+    } finally {
+        setLoading(false);
+    }
+};
+
+
 
   return (
       <View style={style.container}>
@@ -84,8 +93,8 @@ export default function AlterUser() {
               <TextInput
                   style={style.input}
                   placeholder="email@com"
-                  value={email}  // Agora está usando o email "mocado"
-                  editable={false}
+                  value={email}
+                  editable={false} 
               />
 
               <TextInput
@@ -105,11 +114,15 @@ export default function AlterUser() {
               {error ? <Text style={{ color: 'red' }}>{error}</Text> : null}
 
               <View style={style.footer}>
-                  <Button title="Salvar Alterações" onPress={handleSaveChanges} />
+              <View style={style.footer}>
+                <Button
+                    title="Salvar Alterações"
+                    onPress={() => { handleSaveChanges();}}
+                />
+                </View>
               </View>
           </View>
           <LoadingModal visible={loading} />
       </View>
   );
 }
-

@@ -15,13 +15,23 @@ export async function getCustomerData(email: string) {
     }
 }
 
-export async function updateCustomerData(customer: { name: string; email: string; phoneNumber: string; password: string }) {
+export async function updateCustomerData(customer: { name: string; email: string; phoneNumber: string}) {
     try {
-        const response = await customerClient.put('/customer/alter', customer);
+        const response = await customerClient.put('/customer/update', customer);
         return response.data;
     } catch (error) {
         throw new Error('Erro ao atualizar dados do cliente');
     }
 }
+
+export async function updatePassword(data: { email: string; password: string }) {
+    try {
+        const response = await customerClient.put('/customer/updatePassword', data);
+        return response.data;
+    } catch (error) {
+        throw new Error('Erro ao atualizar senha');
+    }
+}
+
 
 export default customerClient;
