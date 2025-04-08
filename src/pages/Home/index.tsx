@@ -1,179 +1,21 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, ScrollView } from "react-native";
+import { View, Text, StyleSheet, FlatList, Image, ScrollView, ActivityIndicator } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderHome from "../../components/HeaderHome";
 import FooterHome from "../../components/FooterHome";
 import { themas } from "../../global/themas";
-
-const mockCategorias = [
-    {
-        title: "Salgados",
-        data: [
-            {
-                id: 1,
-                name: "Coxinha de Frango",
-                price: 7.0,
-                disponible: "Disponível: P1, P2 e P3",
-                image: require("../../assets/images/coxinha.png"),
-            },
-            {
-                id: 2,
-                name: "Esfiha de Carne",
-                price: 7.0,
-                disponible: "Disponível: P1",
-                image: require("../../assets/images/coxinha.png"),
-            },
-            {
-                id: 3,
-                name: "Croissant de Queijo",
-                price: 7.0,
-                disponible: "Disponível: P1",
-                image: require("../../assets/images/coxinha.png"),
-            },
-            {
-                id: 10,
-                name: "Kibe",
-                price: 6.0,
-                disponible: "Disponível: P1, P3",
-                image: require("../../assets/images/coxinha.png"),
-            },
-            {
-                id: 11,
-                name: "Empada de Frango",
-                price: 8.0,
-                disponible: "Disponível: P2",
-                image: require("../../assets/images/coxinha.png"),
-            },
-        ],
-    },
-    {
-        title: "Bebidas",
-        data: [
-            {
-                id: 4,
-                name: "Coca Cola - 350ml",
-                price: 5.0,
-                disponible: "Disponível: P1, P2 e P3",
-                image: require("../../assets/images/coca.jpg"),
-            },
-            {
-                id: 5,
-                name: "Guaraviton - 500ml",
-                price: 6.0,
-                disponible: "Disponível: P1",
-                image: require("../../assets/images/coca.jpg"),
-            },
-            {
-                id: 6,
-                name: "Guaraná Zero - 350ml",
-                price: 5.0,
-                disponible: "Disponível: P2",
-                image: require("../../assets/images/coca.jpg"),
-            },
-            {
-                id: 12,
-                name: "Água Mineral - 500ml",
-                price: 3.0,
-                disponible: "Disponível: P1, P2",
-                image: require("../../assets/images/coca.jpg"),
-            },
-            {
-                id: 13,
-                name: "Suco de Laranja - 300ml",
-                price: 7.0,
-                disponible: "Disponível: P1, P3",
-                image: require("../../assets/images/coca.jpg"),
-            },
-        ],
-    },
-    {
-        title: "Pratos Feitos",
-        data: [
-            {
-                id: 7,
-                name: "Virada à Paulista",
-                price: 25.0,
-                disponible: "Disponível: P2 e P3",
-                image: require("../../assets/images/pf.jpg"),
-            },
-            {
-                id: 8,
-                name: "Bife à Parmegiana",
-                price: 30.0,
-                disponible: "Disponível: P2 e P3",
-                image: require("../../assets/images/pf.jpg"),
-            },
-            {
-                id: 9,
-                name: "Bife Acebolado",
-                price: 28.0,
-                disponible: "Disponível: P2 e P3",
-                image: require("../../assets/images/pf.jpg"),
-            },
-            {
-                id: 14,
-                name: "Frango Grelhado",
-                price: 22.0,
-                disponible: "Disponível: P1, P3",
-                image: require("../../assets/images/pf.jpg"),
-            },
-            {
-                id: 15,
-                name: "Peixe Frito com Arroz e Salada",
-                price: 35.0,
-                disponible: "Disponível: P1, P2",
-                image: require("../../assets/images/pf.jpg"),
-            },
-        ],
-    },
-    {
-        title: "Sobremesas",
-        data: [
-            {
-                id: 16,
-                name: "Torta de Morango",
-                price: 12.0,
-                disponible: "Disponível: P1",
-                image: require("../../assets/images/tortamorangofatia-removebg-preview.png"),
-            },
-            {
-                id: 17,
-                name: "Pudim de Leite",
-                price: 10.0,
-                disponible: "Disponível: P2 e P3",
-                image: require("../../assets/images/tortamorangofatia-removebg-preview.png"),
-            },
-            {
-                id: 18,
-                name: "Brigadeiro",
-                price: 3.0,
-                disponible: "Disponível: P1, P3",
-                image: require("../../assets/images/tortamorangofatia-removebg-preview.png"),
-            },
-            {
-                id: 19,
-                name: "Mousse de Maracujá",
-                price: 8.0,
-                disponible: "Disponível: P1, P2",
-                image: require("../../assets/images/tortamorangofatia-removebg-preview.png"),
-            },
-            {
-                id: 20,
-                name: "Bolo de Cenoura",
-                price: 15.0,
-                disponible: "Disponível: P1, P3",
-                image: require("../../assets/images/tortamorangofatia-removebg-preview.png"),
-            },
-        ],
-    },
-];
+import { getProducts } from "../../api/product/apiGetProducts";
 
 export default function ProfileScreen() {
+    const [products, setProducts] = useState<any[]>([]); // Estado para armazenar os produtos agrupados por categoria
+    const [loading, setLoading] = useState(true); // Estado para controlar o carregamento
     const [user, setUser] = useState<{
         email: string;
         name: string;
         cellphoneNumber: string;
     } | null>(null);
+
+    const [error, setError] = useState<string | null>(null); // Estado para tratar erros
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -182,8 +24,50 @@ export default function ProfileScreen() {
                 setUser(JSON.parse(userData));
             }
         };
-
         getUserInfo();
+    }, []);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const data = await getProducts(); // Chamada à API
+                console.log("Dados retornados pela API:", data); // Log dos dados retornados
+
+                // Agrupar os produtos por categoria
+                const groupedProducts = data.reduce((acc: any, product: any) => {
+                    const category = product.category_name;
+                    if (!acc[category]) {
+                        acc[category] = [];
+                    }
+
+                    product.available_in_food_courts = `Disponível em: ${product.available_in_food_courts}`;
+
+                    acc[category].push(product);
+                    return acc;
+                }, {});
+
+                // Converter o objeto agrupado em um array
+                const formattedProducts = Object.keys(groupedProducts)
+                .map((category) => ({
+                    title: category,
+                    data: groupedProducts[category],
+                }))
+                .sort((a, b) => {
+                    // Exibir "Salgados" antes de "Bebidas"
+                    if (a.title === "Salgados") return -1;
+                    if (b.title === "Salgados") return 1;
+                    return 0;
+                });
+
+                setProducts(formattedProducts); // Atualiza o estado com os produtos agrupados
+            } catch (error) {
+                console.error("Erro ao buscar produtos:", error);
+                setError("Não foi possível carregar os produtos. Tente novamente mais tarde.");
+            } finally {
+                setLoading(false); // Finaliza o carregamento
+            }
+        };
+        fetchProducts();
     }, []);
 
     const renderCategory = (category: { title: string; data: any[] }) => (
@@ -192,7 +76,7 @@ export default function ProfileScreen() {
             <FlatList
                 data={category.data}
                 renderItem={({ item }) => renderItem(item)}
-                keyExtractor={(item) => item.id.toString()}
+                keyExtractor={(item) => item.product_name}
                 horizontal={true}
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{ paddingHorizontal: 10 }}
@@ -201,14 +85,16 @@ export default function ProfileScreen() {
         </View>
     );
 
-    const renderItem = (item: { id: number; name: string; price: number; disponible: string; image: any }) => (
+    const renderItem = (item: { product_name: string; product_image: string; available_in_food_courts: string }) => (
         <View style={styles.itemContainer}>
-            <Image source={item.image} style={styles.itemImage} />
+            <Image
+                source={item.product_image ? { uri: item.product_image } : require("../../assets/images/tortamorangofatia-removebg-preview.png")}
+                style={styles.itemImage}
+            />
             <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode="tail">
-                {item.name}
+                {item.product_name}
             </Text>
-            <Text style={styles.itemPrice}>R$ {item.price.toFixed(2)}</Text>
-            <Text style={styles.itemDisponible}>{item.disponible}</Text>
+            <Text style={styles.itemDisponible}>{item.available_in_food_courts}</Text>
         </View>
     );
 
@@ -216,7 +102,7 @@ export default function ProfileScreen() {
         <>
             <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
                 <HeaderHome />
-                {mockCategorias.map((category) => renderCategory(category))}
+                {products.map((category) => renderCategory(category))}
             </ScrollView>
             <FooterHome />
         </>
@@ -224,12 +110,37 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
+    loadingContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    errorText: {
+        color: "red",
+        fontSize: 16,
+        textAlign: "center",
+        marginHorizontal: 20,
+    },
+    emptyContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+    },
+    emptyText: {
+        fontSize: 16,
+        color: "#666",
+    },
     container: {
         flex: 1,
         backgroundColor: "#fff",
     },
     scrollContent: {
-        paddingBottom: "100%"
+        paddingBottom: 400, // Espaço para o footer
     },
     categoryContainer: {
         marginVertical: 15,
@@ -264,19 +175,15 @@ const styles = StyleSheet.create({
         textAlign: "center",
         color: "#333",
     },
-    itemPrice: {
-        fontSize: 16,
-        color: "#333",
-        fontWeight: "bold",
-    },
     itemDisponible: {
         fontSize: 11,
         textAlign: "center",
         color: themas.colors.lightGrayForText,
     },
     itemSeparator: {
-        width: 0.5,
-        backgroundColor: themas.colors.lightGrayForSeparator,
+        width: 10,
+        backgroundColor: "transparent",
     },
+    
 });
 
