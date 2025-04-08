@@ -3,7 +3,6 @@ import productClient from "../clients/productClient";
 export async function getProducts() {
     try {
         const response = await productClient.get("/product/distinct-query");
-        console.info("URL API: ", productClient.defaults.baseURL);
         console.info("Requisição para o IP:", productClient.defaults.baseURL);
         if (response.status === 200) {
             return response.data;
