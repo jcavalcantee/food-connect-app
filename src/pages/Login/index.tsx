@@ -6,7 +6,7 @@ import HeaderApp from "../../components/Header/header";
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ACCESS_IP_API } from '@env';
+import { loginCustomer } from '../../api/login/apiLoginCustomer';
 
 type RootStackParamList = {
     Login: undefined;
@@ -51,21 +51,13 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const response = await fetch(`${ACCESS_IP_API}:8082/CustomerLogin`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
-            });
-
-            const data = await response.json();
-
+            const response = await loginCustomer(email, password);
             if(response.status === 200) {
-                await AsyncStorage.setItem("userInfo", JSON.stringify(data.customerInfo));
-                Alert.alert(data.status, data.message);
-                console.log("Bateu aqui");
+                await AsyncStorage.setItem("userInfo", JSON.stringify(response.data.customerInfo));
+                Alert.alert(response.data.status, response.data.message);
                 navigation.navigate('Home');
             } else {
-                Alert.alert(data.status, data.message);
+                Alert.alert(response.data.status, response.data.message);
             }
         } catch (error) {
             Alert.alert("Erro", "Erro ao conectar com o servidor" + error);
