@@ -31,11 +31,9 @@ export default function ProfileScreen() {
         const fetchProducts = async () => {
             try {
                 const data = await getProducts(); // Chamada à API
-                console.log("Dados retornados pela API:", data); // Log dos dados retornados
-
                 // Agrupar os produtos por categoria
                 const groupedProducts = data.reduce((acc: any, product: any) => {
-                    const category = product.category_name;
+                    const category = String(product.category_name);
                     if (!acc[category]) {
                         acc[category] = [];
                     }
@@ -49,7 +47,7 @@ export default function ProfileScreen() {
                 // Converter o objeto agrupado em um array
                 const formattedProducts = Object.keys(groupedProducts)
                 .map((category) => ({
-                    title: category,
+                    title: String(category),
                     data: groupedProducts[category],
                 }))
                 .sort((a, b) => {
@@ -101,7 +99,7 @@ export default function ProfileScreen() {
     return (
         <>
             <ScrollView style={styles.container} contentContainerStyle={styles.scrollContent}>
-                <HeaderHome />
+                <HeaderHome username={user?.name.split(" ")[0] || "Visitante"} />
                 {products.map((category) => renderCategory(category))}
             </ScrollView>
             <FooterHome />
@@ -140,7 +138,7 @@ const styles = StyleSheet.create({
         backgroundColor: "#fff",
     },
     scrollContent: {
-        paddingBottom: 400, // Espaço para o footer
+        paddingBottom: 320, // Espaço para o footer
     },
     categoryContainer: {
         marginVertical: 15,
