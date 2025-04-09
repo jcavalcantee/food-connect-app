@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, FlatList, Image, ScrollView, ActivityIndicator } from "react-native";
+import { View, Text, FlatList, ScrollView } from "react-native";
+import { styles } from "./styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderHome from "../../components/HeaderHome";
 import FooterHome from "../../components/FooterHome";
-import { themas } from "../../global/themas";
 import { getProducts } from "../../api/product/apiGetProducts";
+import ProductItem from "../../components/CardProductCategory";
 
 export default function ProfileScreen() {
     const [products, setProducts] = useState<any[]>([]); // Estado para armazenar os produtos agrupados por categoria
@@ -83,18 +84,7 @@ export default function ProfileScreen() {
         </View>
     );
 
-    const renderItem = (item: { product_name: string; product_image: string; available_in_food_courts: string }) => (
-        <View style={styles.itemContainer}>
-            <Image
-                source={item.product_image ? { uri: item.product_image } : require("../../assets/images/tortamorangofatia-removebg-preview.png")}
-                style={styles.itemImage}
-            />
-            <Text style={styles.itemTitle} numberOfLines={2} ellipsizeMode="tail">
-                {item.product_name}
-            </Text>
-            <Text style={styles.itemDisponible}>{item.available_in_food_courts}</Text>
-        </View>
-    );
+    const renderItem = (item: any) => <ProductItem {...item} />;
 
     return (
         <>
@@ -106,82 +96,3 @@ export default function ProfileScreen() {
         </>
     );
 }
-
-const styles = StyleSheet.create({
-    loadingContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    errorContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    errorText: {
-        color: "red",
-        fontSize: 16,
-        textAlign: "center",
-        marginHorizontal: 20,
-    },
-    emptyContainer: {
-        flex: 1,
-        justifyContent: "center",
-        alignItems: "center",
-    },
-    emptyText: {
-        fontSize: 16,
-        color: "#666",
-    },
-    container: {
-        flex: 1,
-        backgroundColor: "#fff",
-    },
-    scrollContent: {
-        paddingBottom: 320, // Espaço para o footer
-    },
-    categoryContainer: {
-        marginVertical: 15,
-    },
-    categoryTitle: {
-        fontSize: 20,
-        fontWeight: "bold",
-        color: "black",
-        marginLeft: 10,
-        paddingLeft: "5%",
-    },
-    itemContainer: {
-        width: 160,
-        height: 200,
-        marginHorizontal: 8,
-        borderRadius: 8,
-        alignItems: "center",
-        padding: 10,
-        justifyContent: "space-between",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.1,
-        shadowRadius: 5,
-    },
-    itemImage: {
-        width: 120,
-        height: 100,
-        borderRadius: 15,
-    },
-    itemTitle: {
-        fontSize: 14,
-        fontWeight: "bold",
-        textAlign: "center",
-        color: "#333",
-    },
-    itemDisponible: {
-        fontSize: 11,
-        textAlign: "center",
-        color: themas.colors.lightGrayForText,
-    },
-    itemSeparator: {
-        width: 10,
-        backgroundColor: "transparent",
-    },
-    
-});
-
