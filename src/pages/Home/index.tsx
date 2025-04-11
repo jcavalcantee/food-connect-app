@@ -6,17 +6,21 @@ import HeaderHome from "../../components/HeaderHome";
 import FooterHome from "../../components/FooterHome";
 import { getProducts } from "../../api/product/apiGetProducts";
 import ProductItem from "../../components/CardProductCategory";
+import ChooseSnackBarModal from "../../components/ChooseSnackBarModal/ChooseSnackBarModal";
+import { getStoresGroupedByFoodCourt } from "../../api/product/apiGetSotresGroupedByFoodCourt";
 
 export default function ProfileScreen() {
-    const [products, setProducts] = useState<any[]>([]); // Estado para armazenar os produtos agrupados por categoria
-    const [loading, setLoading] = useState(true); // Estado para controlar o carregamento
+    const [products, setProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
     const [user, setUser] = useState<{
         email: string;
         name: string;
         cellphoneNumber: string;
     } | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
 
-    const [error, setError] = useState<string | null>(null); // Estado para tratar erros
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -31,39 +35,33 @@ export default function ProfileScreen() {
     useEffect(() => {
         const fetchProducts = async () => {
             try {
-                const data = await getProducts(); // Chamada à API
-                // Agrupar os produtos por categoria
+                const data = await getProducts();
                 const groupedProducts = data.reduce((acc: any, product: any) => {
                     const category = String(product.category_name);
                     if (!acc[category]) {
                         acc[category] = [];
                     }
-
-                    product.available_in_food_courts = `Disponível em: ${product.available_in_food_courts}`;
-
                     acc[category].push(product);
                     return acc;
                 }, {});
 
-                // Converter o objeto agrupado em um array
                 const formattedProducts = Object.keys(groupedProducts)
                 .map((category) => ({
                     title: String(category),
                     data: groupedProducts[category],
                 }))
                 .sort((a, b) => {
-                    // Exibir "Salgados" antes de "Bebidas"
                     if (a.title === "Salgados") return -1;
                     if (b.title === "Salgados") return 1;
                     return 0;
                 });
 
-                setProducts(formattedProducts); // Atualiza o estado com os produtos agrupados
+                setProducts(formattedProducts);
             } catch (error) {
                 console.error("Erro ao buscar produtos:", error);
                 setError("Não foi possível carregar os produtos. Tente novamente mais tarde.");
             } finally {
-                setLoading(false); // Finaliza o carregamento
+                setLoading(false);
             }
         };
         fetchProducts();
@@ -84,7 +82,20 @@ export default function ProfileScreen() {
         </View>
     );
 
-    const renderItem = (item: any) => <ProductItem {...item} />;
+    const renderItem = (item: any) => (
+        <ProductItem {...item}
+            onPress={async () => {
+                try {
+                    const stores = await getStoresGroupedByFoodCourt(item.product_name);
+                    console.log(stores);
+                    setSelectedProduct(stores);
+                    setModalVisible(true);
+                } catch (error) {
+                    console.error("Erro ao buscar lojas:", error);
+                }
+            }} 
+        />
+    );
 
     return (
         <>
@@ -93,6 +104,14 @@ export default function ProfileScreen() {
                 {products.map((category) => renderCategory(category))}
             </ScrollView>
             <FooterHome />
+            <ChooseSnackBarModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onConfirm={(praca, lanchonete) => {
+                console.log('Selecionado:', praca, lanchonete);
+                }}
+                data={selectedProduct ? selectedProduct : []}
+            />
         </>
     );
 }
