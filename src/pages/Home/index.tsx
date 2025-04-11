@@ -8,6 +8,15 @@ import { getProducts } from "../../api/product/apiGetProducts";
 import ProductItem from "../../components/CardProductCategory";
 import ChooseSnackBarModal from "../../components/ChooseSnackBarModal/ChooseSnackBarModal";
 import { getStoresGroupedByFoodCourt } from "../../api/product/apiGetSotresGroupedByFoodCourt";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+    Home: undefined;
+    StoreProducts: { storeId: string | number };
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
 
 export default function ProfileScreen() {
     const [products, setProducts] = useState<any[]>([]);
@@ -19,8 +28,9 @@ export default function ProfileScreen() {
     } | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
-
     const [error, setError] = useState<string | null>(null);
+
+    const navigation = useNavigation<NavigationProp>();
 
     useEffect(() => {
         const getUserInfo = async () => {
@@ -46,15 +56,15 @@ export default function ProfileScreen() {
                 }, {});
 
                 const formattedProducts = Object.keys(groupedProducts)
-                .map((category) => ({
-                    title: String(category),
-                    data: groupedProducts[category],
-                }))
-                .sort((a, b) => {
-                    if (a.title === "Salgados") return -1;
-                    if (b.title === "Salgados") return 1;
-                    return 0;
-                });
+                    .map((category) => ({
+                        title: String(category),
+                        data: groupedProducts[category],
+                    }))
+                    .sort((a, b) => {
+                        if (a.title === "Salgados") return -1;
+                        if (b.title === "Salgados") return 1;
+                        return 0;
+                    });
 
                 setProducts(formattedProducts);
             } catch (error) {
@@ -87,13 +97,12 @@ export default function ProfileScreen() {
             onPress={async () => {
                 try {
                     const stores = await getStoresGroupedByFoodCourt(item.product_name);
-                    console.log(stores);
                     setSelectedProduct(stores);
                     setModalVisible(true);
                 } catch (error) {
                     console.error("Erro ao buscar lojas:", error);
                 }
-            }} 
+            }}
         />
     );
 
@@ -107,8 +116,8 @@ export default function ProfileScreen() {
             <ChooseSnackBarModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
-                onConfirm={(praca, lanchonete) => {
-                console.log('Selecionado:', praca, lanchonete);
+                onConfirm={(lanchonete) => {
+                    navigation.navigate('StoreProducts', { storeId: lanchonete });
                 }}
                 data={selectedProduct ? selectedProduct : []}
             />
