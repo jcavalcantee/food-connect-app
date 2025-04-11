@@ -41,11 +41,11 @@ const ChooseSnackBarModal: React.FC<Props> = ({
 
   const lanchonetes = pracaSelecionada
     ? data
-        .find((item) => item.foodCourt === pracaSelecionada)
-        ?.stores.map((store) => ({
-          label: store.storeName,
-          value: store.storeId,
-        })) ?? []
+      .find((item) => item.foodCourt === pracaSelecionada)
+      ?.stores.map((store) => ({
+        label: store.storeName,
+        value: store.storeId,
+      })) ?? []
     : [];
 
   useEffect(() => {

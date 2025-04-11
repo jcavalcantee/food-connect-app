@@ -5,32 +5,32 @@ type StoreAvailability = {
     storeName: string;
     foodCourt: string;
 };
-  
+
 type GroupedByFoodCourt = {
     foodCourt: string;
     stores: {
-      storeId: number;
-      storeName: string;
+        storeId: number;
+        storeName: string;
     }[];
 };
 
 function groupByFoodCourt(data: StoreAvailability[]): GroupedByFoodCourt[] {
     const grouped: Record<string, { storeId: number; storeName: string }[]> = {};
-  
+
     data.forEach((item) => {
-      if (!grouped[item.foodCourt]) {
-        grouped[item.foodCourt] = [];
-      }
-  
-      grouped[item.foodCourt].push({
-        storeId: item.storeId,
-        storeName: item.storeName,
-      });
+        if (!grouped[item.foodCourt]) {
+            grouped[item.foodCourt] = [];
+        }
+
+        grouped[item.foodCourt].push({
+            storeId: item.storeId,
+            storeName: item.storeName,
+        });
     });
-  
+
     return Object.entries(grouped).map(([foodCourt, stores]) => ({
-      foodCourt,
-      stores,
+        foodCourt,
+        stores,
     }));
 }
 
