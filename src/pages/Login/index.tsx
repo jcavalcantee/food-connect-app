@@ -7,6 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginCustomer } from '../../api/login/apiLoginCustomer';
+import InputPasswordForms from '../../components/PasswordInput';
 
 type RootStackParamList = {
     Login: undefined;
@@ -74,7 +75,7 @@ export default function Login() {
                 <Text style={style.info}>Informe suas credenciais para validação.</Text>
                 <TextInputForms placeholder="Digite seu e-mail" value={email} onChangeText={validateEmail} />
                 {emailError && <Text style={style.errorText}>{emailError}</Text>}
-                <TextInputForms placeholder='Digite sua senha' value={password} onChangeText={setPassword} secureTextEntry />
+                <InputPasswordForms placeholder='Digite sua senha' value={password} onChangeText={setPassword} />
             </View>
             <View style={style.footer}>
                 <TouchableOpacity style={style.button} onPress={handleLogin} disabled={loading} >
