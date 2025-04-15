@@ -21,8 +21,8 @@ type GroupedByFoodCourt = {
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (foodCourt: string | number, storeId: string | number) => void;
-  data: GroupedByFoodCourt[]; // <- novo
+  onConfirm: (storeId: string | number) => void;
+  data: GroupedByFoodCourt[];
 };
 
 const ChooseSnackBarModal: React.FC<Props> = ({
@@ -86,7 +86,7 @@ const ChooseSnackBarModal: React.FC<Props> = ({
             style={styles.confirmBtn}
             onPress={() => {
               if (lanchoneteSelecionada !== null) {
-                onConfirm(pracaSelecionada, lanchoneteSelecionada);
+                onConfirm(lanchoneteSelecionada);
                 onClose();
               }
             }}
