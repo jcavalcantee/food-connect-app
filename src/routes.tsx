@@ -2,11 +2,13 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Login from './pages/Login';
 import EmailValidation from './pages/EmailValidation';
+import EmailResetValidation from './pages/EmailResetValidation';
 import SolicitacaoEmail from './pages/SolicitacaoEmail';
 import RegisterCustomerScreen from './pages/RegisterCustomerScreen';
 import AlterUser from './pages/AlterUser';
 import Home from './pages/Home';
 import StoreProductsScreen from './pages/StoreProducts';
+import ResetPassword from './pages/ResetPassword';
 // Importar outras telas conforme necessário
 
 const Stack = createStackNavigator();
@@ -20,6 +22,8 @@ export default function Routes() {
                 <Stack.Screen name="StoreProducts" component={StoreProductsScreen} />
                 <Stack.Screen name="SolicitacaoEmail" component={SolicitacaoEmail} />
                 <Stack.Screen name="EmailValidation" component={EmailValidation} />
+                <Stack.Screen name="EmailResetValidation" component={EmailResetValidation} />
+                <Stack.Screen name="ResetPassword" component={ResetPassword} />
                 <Stack.Screen name="RegisterCustomerScreen" component={RegisterCustomerScreen} />
                 <Stack.Screen name="AlterUser" component={AlterUser} />
                 {/* Adicione outras telas aqui */}

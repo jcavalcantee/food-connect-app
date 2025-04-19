@@ -8,10 +8,12 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginCustomer } from '../../api/login/apiLoginCustomer';
 import InputPasswordForms from '../../components/PasswordInput';
+import { sendResetPasswordValidationCode } from '../../api/email/apiEmailSender';
 
 type RootStackParamList = {
     Login: undefined;
     SolicitacaoEmail: undefined;
+    EmailResetValidation: undefined;
     Home: undefined;
 };
 
@@ -22,7 +24,6 @@ export default function Login() {
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [emailError, setEmailError] = useState<string | null>(null);
-
     const navigation = useNavigation<NavigationProp>();
 
     const validateEmail = (email: string) => {
@@ -44,7 +45,7 @@ export default function Login() {
             return;
         }
 
-        if(emailError) {
+        if (emailError) {
             Alert.alert("Erro", "Corrija o e-mail antes de continuar!");
             return;
         }
@@ -53,7 +54,7 @@ export default function Login() {
 
         try {
             const response = await loginCustomer(email, password);
-            if(response.status === 200) {
+            if (response.status === 200) {
                 await AsyncStorage.setItem("userInfo", JSON.stringify(response.data.customerInfo));
                 Alert.alert(response.data.status, response.data.message);
                 navigation.navigate('Home');
@@ -67,6 +68,42 @@ export default function Login() {
         }
     };
 
+    const handleResetPassword = async () => {
+        if (!email) {
+            Alert.alert("Erro", "Preencha o campo de e-mail!");
+            return;
+        }
+
+        if (emailError) {
+            Alert.alert("Erro", "Corrija o e-mail antes de continuar!");
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await sendResetPasswordValidationCode(email);
+            if (response === 201) {
+                Alert.alert("Email enviado com sucesso!");
+                await saveValue(email);
+                navigation.navigate('EmailResetValidation');
+            }
+        } catch (error) {
+            Alert.alert("Algo deu errado.\nTente mais tarde!");
+        } finally {
+            setLoading(false);
+        }
+    }
+
+    const saveValue = async (email: string) => {
+        try {
+            await AsyncStorage.setItem('resetEmail', email);
+            console.info(`Email enviado com sucesso para: ${email}`);
+        } catch (e) {
+            console.error("Erro ao salvar email", e);
+        }
+    };
+
     return (
         <View style={style.container}>
             <HeaderApp />
@@ -76,6 +113,11 @@ export default function Login() {
                 <TextInputForms placeholder="Digite seu e-mail" value={email} onChangeText={validateEmail} />
                 {emailError && <Text style={style.errorText}>{emailError}</Text>}
                 <InputPasswordForms placeholder='Digite sua senha' value={password} onChangeText={setPassword} />
+                <View style={style.forgotpasswordcontainer}>
+                    <TouchableOpacity onPress={handleResetPassword}>
+                        <Text style={style.forgotpassword}>Esqueci minha senha</Text>
+                    </TouchableOpacity>
+                </View>
             </View>
             <View style={style.footer}>
                 <TouchableOpacity style={style.button} onPress={handleLogin} disabled={loading} >

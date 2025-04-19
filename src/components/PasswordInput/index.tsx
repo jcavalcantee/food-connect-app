@@ -7,12 +7,14 @@ interface InputPasswordFormsProps {
   placeholder?: string;
   value: string;
   onChangeText: (text: string) => void;
+  onBlur?: () => void;
 }
 
 export default function InputPasswordForms({
   placeholder = "Digite sua senha",
   value,
   onChangeText,
+  onBlur
 }: InputPasswordFormsProps) {
   const [secureText, setSecureText] = useState(true);
 
@@ -28,6 +30,7 @@ export default function InputPasswordForms({
         secureTextEntry={secureText}
         value={value}
         onChangeText={onChangeText}
+        onBlur={onBlur}
       />
       <TouchableOpacity onPress={toggleSecureText} style={style.iconEye}>
         <Ionicons
