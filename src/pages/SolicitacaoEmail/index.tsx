@@ -8,7 +8,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sendValidationCode } from "../../api/email/apiEmailSender";
 import { useNavigation } from '@react-navigation/native';
-import LoadingModal from "../../components/LoadingModal"; 
+import LoadingModal from "../../components/LoadingModal";
 
 type RootStackParamList = {
     Login: undefined;
@@ -21,8 +21,8 @@ type SolicitacaoEmailNavigationProp = StackNavigationProp<RootStackParamList, 'S
 export default function SolicitacaoEmail() {
     const [email, setEmail] = useState<string>('');
     const [savedValue, setSavedValue] = useState('');
-    const [loading, setLoading] = useState(false); 
-    
+    const [loading, setLoading] = useState(false);
+
     const navigation = useNavigation<SolicitacaoEmailNavigationProp>();
 
     const handleValidationEmail = async () => {
@@ -32,18 +32,18 @@ export default function SolicitacaoEmail() {
         }
 
         try {
-            setLoading(true); 
+            setLoading(true);
             const response = await sendValidationCode(email);
 
             if (response === 201) {
                 Alert.alert("Email enviado com sucesso!");
                 await saveValue(email);
                 navigation.navigate('EmailValidation');
-            } 
+            }
         } catch (error) {
             Alert.alert("Algo deu errado.\nTente mais tarde!");
         } finally {
-            setLoading(false); 
+            setLoading(false);
         }
     };
 
@@ -78,21 +78,21 @@ export default function SolicitacaoEmail() {
             <View style={style.content}>
                 <Text style={style.title}>Informe seu email</Text>
                 <Text style={style.info}>Informe seu e-mail institucional para validação.</Text>
-                
-                <TextInputForms 
-                    placeholder="Digite seu e-mail" 
-                    value={email} 
-                    onChangeText={setEmail} 
+
+                <TextInputForms
+                    placeholder="Digite seu e-mail"
+                    value={email}
+                    onChangeText={setEmail}
                 />
 
                 {loading ? (
                     <ActivityIndicator size="small" color="#FFFFFF" />
                 ) : (
-                    <Button 
-                        onPress={handleValidationEmail} 
-                        title='Confirmar' 
+                    <Button
+                        onPress={handleValidationEmail}
+                        title='Confirmar'
                         disabled={false}
-                        style={{ height: '10%'}}
+                        style={{ height: '10%' }}
                     />
                 )}
 
