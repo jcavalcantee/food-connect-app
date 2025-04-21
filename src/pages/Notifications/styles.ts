@@ -7,17 +7,39 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   title: {
-    fontSize: 24,
+    fontSize: 20,
+    fontWeight: 'bold',
     marginBottom: 16,
+  },
+  notification: {
+    padding: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ddd',
+  },
+  status: {
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  notificationCard: {
-    backgroundColor: '#f5f5f5',
-    padding: 12,
-    marginBottom: 10,
-    borderRadius: 8,
+  date: {
+    fontSize: 14,
+    color: '#555',
   },
-  notificationText: {
+  read: {
+    fontSize: 14,
+    color: '#888',
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  errorText: {
+    color: 'red',
     fontSize: 16,
   },
 });
