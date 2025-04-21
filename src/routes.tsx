@@ -17,7 +17,6 @@ export default function Routes() {
     return (
         <NavigationContainer>
             <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Profile" component={Profile} />
                 <Stack.Screen name="Login" component={Login} />
                 <Stack.Screen name="Home" component={Home} />
                 <Stack.Screen name="StoreProducts" component={StoreProductsScreen} />
@@ -25,6 +24,7 @@ export default function Routes() {
                 <Stack.Screen name="EmailValidation" component={EmailValidation} />
                 <Stack.Screen name="RegisterCustomerScreen" component={RegisterCustomerScreen} />
                 <Stack.Screen name="AlterUser" component={AlterUser} />
+                <Stack.Screen name="Profile" component={Profile} />
                 <Stack.Screen name="Notifications" component={Notifications} />
                 {/* Adicione outras telas aqui */}
             </Stack.Navigator>

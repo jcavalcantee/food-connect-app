@@ -11,7 +11,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 // Define the RootStackParamList type
 type RootStackParamList = {
   AlterUser: undefined;
-  Notificacoes: undefined;
+  Notifications: undefined;
 };
 
 
@@ -31,7 +31,7 @@ export default function Profile() {
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Notificacoes')}>
+            <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Notifications')}>
               <Ionicons name="notifications" size={24} color="#000" />
               <View style={{ marginLeft: 10 }}>
                 <Text style={styles.itemTitle}>Notificações</Text>

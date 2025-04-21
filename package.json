@@ -20,6 +20,7 @@
     "dotenv": "^16.4.7",
     "env-var": "^7.5.0",
     "expo": "~52.0.38",
+    "expo-notifications": "^0.29.14",
     "expo-status-bar": "~2.0.1",
     "food-connect-app": "file:",
     "react": "18.3.1",
