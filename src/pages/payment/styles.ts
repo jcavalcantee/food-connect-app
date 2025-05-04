@@ -3,20 +3,21 @@ import { StyleSheet } from 'react-native';
 export const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
+    padding: 50,
     backgroundColor: '#fff',
     justifyContent: 'center',
     alignItems: 'center',
+    gap: 16,
   },
   title: {
     fontWeight: 'bold',
-    fontSize: 14,
+    fontSize: 22,
     marginBottom: 24,
     textTransform: 'uppercase',
   },
   logo: {
-    width: 80,
-    height: 80,
+    width: 200,
+    height: 200,
     marginBottom: 24,
   },
   subtitle: {
@@ -56,11 +57,13 @@ export const styles = StyleSheet.create({
   timerLabel: {
     fontSize: 14,
     color: '#444',
+    alignSelf: 'flex-start'
   },
   timer: {
     fontSize: 24,
     fontWeight: 'bold',
     marginVertical: 4,
+    alignSelf: 'flex-start',
   },
   progressBarBackground: {
     width: '100%',
