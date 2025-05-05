@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { ACCESS_IP_API } from '@env';
+
+const ACCESS_IP_API = process.env.EXPO_PUBLIC_ACCESS_IP_API;
 
 const registerCustomerClient = axios.create({
     baseURL: `${ACCESS_IP_API}:8083`,

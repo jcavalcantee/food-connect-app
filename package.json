@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "expo start",
+    "start:local": "cross-env NODE_ENV=development expo start",
+    "start:azure": "cross-env NODE_ENV=production expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
     "web": "expo start --web"
@@ -26,7 +27,6 @@
     "react": "19.0.0",
     "react-hook-form": "^7.54.2",
     "react-native": "0.79.2",
-    "react-native-dotenv": "^3.4.11",
     "react-native-gesture-handler": "~2.25.0",
     "react-native-mask-text": "^0.14.2",
     "react-native-masked-text": "^1.13.0",
@@ -42,6 +42,7 @@
     "@types/react": "~19.0.10",
     "@types/react-native": "^0.72.8",
     "@types/react-native-vector-icons": "^6.4.18",
+    "cross-env": "^7.0.3",
     "typescript": "~5.8.3"
   },
   "private": true

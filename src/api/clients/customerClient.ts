@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { ACCESS_IP_API } from '@env';
+
+const ACCESS_IP_API = process.env.EXPO_PUBLIC_ACCESS_IP_API;
 
 const customerClient = axios.create({
     baseURL: `${ACCESS_IP_API}:8083`,
@@ -15,7 +16,7 @@ export async function getCustomerData(email: string) {
     }
 }
 
-export async function updateCustomerData(customer: { name: string; email: string; phoneNumber: string}) {
+export async function updateCustomerData(customer: { name: string; email: string; phoneNumber: string }) {
     try {
         const response = await customerClient.put('/customer/update', customer);
         return response.data;
@@ -32,6 +33,5 @@ export async function updatePassword(data: { email: string; password: string }) 
         throw new Error('Erro ao atualizar senha');
     }
 }
-
 
 export default customerClient;

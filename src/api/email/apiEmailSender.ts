@@ -1,6 +1,7 @@
 import { Alert } from "react-native";
 import apiEmailSender from "../clients/emailClient";
-import { ACCESS_IP_API } from "@env";
+
+const ACCESS_IP_API = process.env.EXPO_PUBLIC_ACCESS_IP_API;
 
 export async function sendValidationCode(email: string) {
     const validDomains = /@(senacsp\.edu\.br|sp\.senac\.br)$/;
