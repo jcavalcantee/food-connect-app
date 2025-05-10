@@ -4,7 +4,8 @@ import {
     Text,
     Image,
     FlatList,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from 'react-native';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { styles } from "./styles";
@@ -115,13 +116,26 @@ export default function StoreProductsScreen() {
             preco: product.price * quantity,
             imagem: product.image_url,
             quantidade: quantity,
-            estimativa: product.expected_delivery_time || 'Previsão indisponível'
+            estimativa: product.expected_delivery_time || 'Previsão indisponível',
+            storeId: storeId // inclui o storeId aqui
         };
-
 
         try {
             const existingCart = await AsyncStorage.getItem('@cartItems');
             const cartItems = existingCart ? JSON.parse(existingCart) : [];
+
+            // Se o carrinho não estiver vazio, verifica se todos os produtos são da mesma loja
+            if (cartItems.length > 0 && cartItems[0].storeId !== storeId) {
+                Alert.alert(
+                    'Carrinho com outra loja',
+                    'Você só pode adicionar produtos de uma loja por vez. Esvazie o carrinho para continuar.',
+                    [{
+                        text: 'OK',
+                        onPress: () => navigation.navigate('Cart')
+                    }]
+                );
+                return;
+            }
 
             // Se o produto já estiver no carrinho, atualiza a quantidade
             const index = cartItems.findIndex((item: any) => item.id === product.id);
