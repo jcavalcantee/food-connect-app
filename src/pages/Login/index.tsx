@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
+import { View, Text, Alert, TouchableOpacity, ActivityIndicator, Modal, Linking } from 'react-native';
 import { style } from "./styles";
 import TextInputForms from "../../components/TextInput/inputTextForms";
 import HeaderApp from "../../components/Header/header";
@@ -38,6 +38,7 @@ export default function Login() {
 
         setEmail(email);
     };
+    const [isTermsModalVisible, setIsTermsModalVisible] = useState<boolean>(false);
 
     const handleLogin = async () => {
         if (!email || !password) {
@@ -56,8 +57,8 @@ export default function Login() {
             const response = await loginCustomer(email, password);
             if (response.status === 200) {
                 await AsyncStorage.setItem("userInfo", JSON.stringify(response.data.customerInfo));
-                Alert.alert(response.data.status, response.data.message);
-                navigation.navigate('Home');
+                // Alert.alert(response.data.status, response.data.message);
+                setIsTermsModalVisible(true); // Exibe o modal
             } else {
                 Alert.alert(response.data.status, response.data.message);
             }
@@ -131,6 +132,52 @@ export default function Login() {
                     <Text style={style.cadastrese}>Cadastre-se aqui</Text>
                 </TouchableOpacity>
             </View>
+    
+            {/* Insira o modal aqui */}
+            <Modal
+                visible={isTermsModalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setIsTermsModalVisible(false)}
+            >
+                <View style={style.modalContainer}>
+                    <View style={style.modalContent}>
+                        <Text style={style.modalTitle}>Termos de Uso</Text>
+                        <Text style={style.modalText}>
+                            Ao usar este aplicativo, você concorda em cumprir os {' '}
+                            <Text 
+                            style={{color: 'blue'}}
+                            onPress={()=>Linking.openURL('https://www.senac.br/termos-de-uso')}>
+                              Termos e condições.</Text> 
+                              {' '}estabelecidos. O aplicativo pode coletar e processar dados pessoais de acordo com a{' '}
+                              <Text 
+                            style={{color: 'blue'}}
+                            onPress={()=>Linking.openURL('https://www.senac.br/politica-de-privacidade')}>
+                               Politicas de privacidade</Text> 
+                            {'\n'}
+                           
+                            {'\n'}
+
+                               
+                               Ao clicar em "Aceitar", você concorda que leu e esta de acordo com os  
+                               {'\n'}   
+                            
+                            {'\n'}
+                            
+                            
+                        </Text>
+                        <TouchableOpacity
+                            style={style.modalButton}
+                            onPress={() => {
+                                setIsTermsModalVisible(false);
+                                navigation.navigate('Home'); // Navega para a próxima tela
+                            }}
+                        >
+                            <Text style={style.modalButtonText}>Aceitar</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
         </View>
     );
 }
