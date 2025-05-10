@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { View, Text, Alert } from "react-native";
+import { View, Text, Alert, Modal, TouchableOpacity, Linking} from "react-native";
 import HeaderApp from "../../components/Header/header";
 import { style } from "./styles";
 import ControlledTextInput from "../../components/Controller/ControlledTextInput";
@@ -41,6 +41,8 @@ export default function RegisterCustomerScreen() {
             phoneNumber: '',
         },
     });
+    const [isTermsModalVisible, setIsTermsModalVisible] = useState(false);
+    const [acceptedTerms, setAcceptedTerms] = useState(false);
 
     // Função para registrar o cliente
     const handleRegisterCustomer = async (data: RegisterCustomerForm) => {
@@ -144,10 +146,61 @@ export default function RegisterCustomerScreen() {
                 />
 
                 <View style={style.footer}>
-                    <Button title="Cadastrar" onPress={handleSubmit(handleRegisterCustomer)} />
+                <Button title="Cadastrar" onPress={() => setIsTermsModalVisible(true)} />
                 </View>
+                
             </View>
             <LoadingModal visible={loading} />
+            <Modal
+                visible={isTermsModalVisible}
+                animationType="slide"
+                transparent={true}
+                onRequestClose={() => setIsTermsModalVisible(false)}>
+                    <View style={style.modalContainer}>
+                    <View style={style.modalContent}>
+                    <Text style={style.modalTitle}>Termos de Uso</Text>
+                    <Text style={style.modalText}>
+                    Ao usar este aplicativo, você concorda em cumprir os{' '}
+                        <Text 
+                    style={{ color: 'blue', textDecorationLine: 'underline' }}
+                    onPress={() => Linking.openURL('https://www.senac.br/termos-de-uso')}>
+                    Termos e condições
+                </Text>{' '}
+                estabelecidos. O aplicativo pode coletar e processar dados pessoais de acordo com a{' '}
+                <Text 
+                    style={{ color: 'blue', textDecorationLine: 'underline' }}
+                    onPress={() => Linking.openURL('https://www.senac.br/politica-de-privacidade')}
+                >
+                    Política de Privacidade
+                </Text>.
+                    </Text>
+                <Text style={style.modalText}>
+                Ao clicar em "Aceitar", você concorda que leu e está de acordo com os termos acima.
+                </Text>
+                <View style={style.modalButtons}>
+    <TouchableOpacity
+        style={style.modalButton}
+        onPress={() => {
+            if (isValid) {
+                setIsTermsModalVisible(false);
+                handleSubmit(handleRegisterCustomer)(); // Envia os dados de cadastro
+            } else {
+                Alert.alert("Erro", "Preencha todos os campos corretamente antes de aceitar os termos.");
+            }
+        }}
+    >
+        <Text style={style.modalButtonText}>Aceitar</Text>
+    </TouchableOpacity>
+    <TouchableOpacity
+        style={[style.modalButton, { backgroundColor: 'red' }]} // Botão "Fechar" com cor diferente
+        onPress={() => setIsTermsModalVisible(false)} // Fecha o modal
+    >
+        <Text style={style.modalButtonText}>Fechar</Text>
+    </TouchableOpacity>
+</View>
+        </View>
+    </View>
+</Modal>
         </View>
     );
 }

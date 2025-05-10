@@ -53,4 +53,45 @@ export const style = StyleSheet.create({
         textAlign: "left",
         width: "100%",
     },
+    modalContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    },
+    modalContent: {
+        width: '80%',
+        backgroundColor: 'white',
+        borderRadius: 10,
+        padding: 20,
+        alignItems: 'center',
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 10,
+    },
+    modalText: {
+        fontSize: 14,
+        textAlign: 'center',
+        marginBottom: 20,
+    },
+    modalButtons: {
+        flexDirection: 'row', // Organiza os botões em linha
+        justifyContent: 'space-around', // Espaçamento uniforme entre os botões
+        marginTop: 20,
+        width: '100%',
+    },
+    modalButton: {
+        backgroundColor: '#007BFF', // Cor do botão "Aceitar"
+        padding: 10,
+        borderRadius: 5,
+        alignItems: 'center',
+        width: '40%', // Largura dos botões
+    },
+    modalButtonText: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+    },
 });

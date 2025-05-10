@@ -62,37 +62,4 @@ export const style = StyleSheet.create({
         color: themas.colors.whiteText,
         fontSize: 15
     },
-
-    modalContainer: {
-        flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
-    },
-    modalContent: {
-        width: '80%',
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 20,
-        alignItems: 'center',
-    },
-    modalTitle: {
-        fontSize: 18,
-        fontWeight: 'bold',
-        marginBottom: 10,
-    },
-    modalText: {
-        fontSize: 14,
-        textAlign: 'center',
-        marginBottom: 20,
-    },
-    modalButton: {
-        backgroundColor: '#007BFF',
-        padding: 10,
-        borderRadius: 5,
-    },
-    modalButtonText: {
-        color: 'white',
-        fontWeight: 'bold',
-    },
 })
