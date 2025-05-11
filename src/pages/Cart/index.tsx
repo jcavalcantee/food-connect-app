@@ -77,6 +77,7 @@ export default function SacolaScreen() {
   const maiorEstimativa = items.length > 0 ? Math.max(...items.map(item => parseEstimativa(item.estimativa))) : 0;
 
   const prazoEntrega = maiorEstimativa === 0 ? 'Pronta entrega' : `${maiorEstimativa} minutos`;
+  AsyncStorage.setItem('@prazoEntrega', prazoEntrega);
 
   return (
     <ScrollView contentContainerStyle={style.container}>
