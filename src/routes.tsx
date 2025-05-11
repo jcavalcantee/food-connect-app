@@ -13,6 +13,7 @@ import Profile from './pages/profile';
 import ResetPassword from './pages/ResetPassword';
 import PaymentScreen from './pages/payment';
 import CartScreen from './pages/Cart';
+import OrderScreen from './pages/Order';
 // Importar outras telas conforme necessário
     
 const Stack = createStackNavigator();
@@ -32,8 +33,9 @@ export default function Routes() {
                 <Stack.Screen name="AlterUser" component={AlterUser} />
                 <Stack.Screen name="Profile" component={Profile} />
                 <Stack.Screen name="Notifications" component={Notifications} />
-                <Stack.Screen name="Payment" component={PaymentScreen} />
                 <Stack.Screen name="Cart" component={CartScreen} />
+                <Stack.Screen name="Payment" component={PaymentScreen} />
+                <Stack.Screen name="OrderScreen" component={OrderScreen} />	
                 {/* Adicione outras telas aqui */}
             </Stack.Navigator>
         </NavigationContainer>
