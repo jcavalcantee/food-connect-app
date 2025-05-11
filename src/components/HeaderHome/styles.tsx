@@ -4,22 +4,20 @@ const statusBarHeight = StatusBar.currentHeight ? StatusBar.currentHeight + 22 :
 
 export const styles = StyleSheet.create({
     safeare: {
-        height: '40%',
+        height: '30%',
         width: themas.dimensions.width
     },
     container: {
         paddingTop: statusBarHeight,
-        height: '55%',
+        height: '50%',
         backgroundColor: '#fff',
-        // alignItems: 'center',
         flexDirection: 'row',
-        
         justifyContent: 'space-between',
         paddingHorizontal: '5%'
     },
     imageLogo: {
-        width: '40%',
-        height: '80%',
+        width: '20%',
+        height: '60%',
     },
     subheader: {
         height: '35%',
@@ -37,6 +35,20 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold',
         marginLeft: '5%',
         paddingBottom: '2%',
-        backgroundColor: '#fff'
+        backgroundColor: '#fff',
+        height: '15%',
+    },
+    cartItemsCount: {
+        position: 'absolute',
+        top: 20,
+        right: -4,
+        backgroundColor: 'red',
+        borderRadius: 10,
+        width: 15,
+        height: 15,
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
     }
 })

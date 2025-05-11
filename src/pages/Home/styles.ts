@@ -31,7 +31,7 @@ export const styles = StyleSheet.create({
         backgroundColor: "#fff",
     },
     scrollContent: {
-        paddingBottom: 320, // Espaço para o footer
+        paddingBottom: 210, // Espaço para o footer
     },
     categoryContainer: {
         marginVertical: 15,

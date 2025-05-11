@@ -7,13 +7,15 @@ import {
     TouchableOpacity,
     Alert
 } from 'react-native';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import SenacCampus from "../../assets/images/senac_campus.jpg";
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { styles } from "./styles";
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import FooterHome from "../../components/FooterHome";
 import { getProductsByStore } from "../../api/product/apiGetProducts";
-import Logo from "../../assets/images/logo-sem-fundo.png";
+import Logo from "../../assets/images/icon.png";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 type Product = {
@@ -170,7 +172,7 @@ export default function StoreProductsScreen() {
                 </View>
             </View>
             <TouchableOpacity style={styles.cartIcon} onPress={() => addToCart(item, quantities[item.id] || 0)}>
-                <Text>🛒</Text>
+                <MaterialCommunityIcons name="shopping-outline" size={25} color="gray" />
             </TouchableOpacity>
         </View>
     );
@@ -179,24 +181,32 @@ export default function StoreProductsScreen() {
         <>
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Image source={Logo} style={styles.headerImage} />
-                    <View style={styles.headerInfo}>
-                        <Text style={styles.storeName}>Engenheiros do Açaí</Text>
-                        <Text style={styles.location}>Localização: PI</Text>
+                    <View style={{ width: '10%' }}></View>
+                    <Image source={Logo} style={styles.imageLogo} />
+                    <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                        <MaterialCommunityIcons name="shopping-outline" size={30} color="black" />
+                        <Text style={styles.cartItemsCount}>10</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.imagesContainer}>
+                    <Image source={SenacCampus} style={styles.imageCarrosel} />
+                    <View style={styles.storeInfoBox}>
+                        <Image source={Logo} style={styles.headerImage} />
+                        <Text style={styles.storeName}>Nome da Loja</Text>
+                        <Text style={styles.location}>Endereço da Loja</Text>
                     </View>
                 </View>
 
                 <View style={styles.tabs}>
-                    <TouchableOpacity onPress={() => filterByCategory(2)} style={styles.circleButton}>
+                    <TouchableOpacity onPress={() => filterByCategory(2)} style={styles.tabCircle}>
                         <Text style={[styles.tab, selectedCategory === 2 && styles.activeTab]}>Salgados</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => filterByCategory(1)} style={styles.circleButton}>
+                    <TouchableOpacity onPress={() => filterByCategory(1)} style={styles.tabCircle}>
                         <Text style={[styles.tab, selectedCategory === 1 && styles.activeTab]}>Bebidas</Text>
                     </TouchableOpacity>
-                    <TouchableOpacity onPress={() => filterByCategory(3)} style={styles.circleButton}>
+                    <TouchableOpacity onPress={() => filterByCategory(3)} style={styles.tabCircle}>
                         <Text style={[styles.tab, selectedCategory === 3 && styles.activeTab]}>Pratos Prontos</Text>
                     </TouchableOpacity>
-
                 </View>
 
                 <FlatList
