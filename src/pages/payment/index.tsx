@@ -3,8 +3,6 @@ import { View, Text, StyleSheet, TextInput, TouchableOpacity, Image, Clipboard }
 import { styles } from './styles'
 import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import Button from "../../components/Button/button"; 
-import { set } from 'react-hook-form';
 import order from '../../api/clients/Order'; // ajuste o caminho se necessário
 import AsyncStorage from '@react-native-async-storage/async-storage';
 // ...outros imports...
