@@ -1,5 +1,5 @@
+import { CardStyleInterpolators } from "@react-navigation/stack";
 import { StyleSheet } from "react-native";
-import { themas } from "../../global/themas";
 
 export const styles = StyleSheet.create({
     container: {
@@ -8,25 +8,20 @@ export const styles = StyleSheet.create({
         height: '50%',
     },
     header: {
-        alignItems: 'center',
-        paddingVertical: 10,
-        backgroundColor: 'darkorange',
-        width: '70%',
-        height: '25%',
-        alignSelf: 'center',
-        borderRadius: 15,
+        flexDirection: 'row',
+        paddingTop: 30,
+        width: '100%',
+        height: '15%',
+        justifyContent: 'space-between',
+        paddingHorizontal: '5%'
     },
     headerImage: {
-        width: '20%',
+        width: '30%',
         height: '50%',
         borderRadius: 50,
         backgroundColor: 'white',
-        borderWidth: 1,
-        borderColor: 'black',
-    },
-    headerInfo: {
-        // marginTop: 10,
-        alignItems: 'center',
+        borderWidth: 0.5,
+        borderColor: 'gray',
     },
     storeName: {
         fontSize: 14,
@@ -39,14 +34,15 @@ export const styles = StyleSheet.create({
     tabs: {
         flexDirection: 'row',
         justifyContent: 'space-around',
-        paddingVertical: 10,
         borderBottomWidth: 1,
         borderColor: '#ccc',
-        height: '10%',
+        height: '5%',
+        marginTop: 20,
     },
     tab: {
         fontSize: 16,
-        color: 'gray',
+        fontWeight: 'bold',
+        color: 'black'
     },
     activeTab: {
         color: 'red',
@@ -55,6 +51,7 @@ export const styles = StyleSheet.create({
     },
     list: {
         paddingHorizontal: 10,
+        paddingBottom: '20%',
     },
     card: {
         flexDirection: 'row',
@@ -89,16 +86,61 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         marginTop: 4,
     },
-    circleButton: {
-        backgroundColor: '#eee',
-        borderRadius: 20,
+    tabCircle: {
         padding: 6,
         marginHorizontal: 8,
+    },
+    circleButton: {
+        marginHorizontal: 8,
+        backgroundColor: '#f0f0f0',
+        borderRadius: 15,
+        width: 30,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
     },
     quantityText: {
         fontSize: 16,
     },
     cartIcon: {
         padding: 8,
+    },
+
+    imageLogo: {
+        width: '20%',
+        height: '60%',
+    },
+    imageCarrosel: {
+        width: '100%',
+        height: '70%'
+    },
+    storeInfoBox: {
+        marginTop: -50,
+        width: '50%',
+        height: '60%',
+        backgroundColor: '#fff',
+        borderRadius: 15,
+        alignItems: 'center',
+        justifyContent: 'center',
+        borderWidth: 0.5,
+        borderColor: 'gray',
+    },
+    imagesContainer: {
+        width: '100%',
+        height: '20%',
+        alignItems: 'center',
+    },
+    cartItemsCount: {
+        position: 'absolute',
+        top: 20,
+        right: -4,
+        backgroundColor: 'red',
+        borderRadius: 10,
+        width: 15,
+        height: 15,
+        textAlign: 'center',
+        color: 'white',
+        fontSize: 10,
+        fontWeight: 'bold',
     },
 });
