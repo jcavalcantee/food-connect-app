@@ -1,48 +1,94 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, SafeAreaView, ScrollView } from 'react-native';
+import { View, Text, ScrollView } from 'react-native';
 import { styles } from './styles';
 import HeaderApp from '../../components/Header/header';
 import FooterHome from '../../components/FooterHome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { connectToOrderUpdates, disconnectFromOrderUpdates } from '../../api/order/sse';
 
 const OrderScreen = () => {
   const [order, setOrder] = useState<any>(null);
 
-  const formatToBrazilianDate = (dateString: string) => {
-      const date = new Date(dateString.replace(' ', 'T')); // Corrige para padrão ISO
-      return date.toLocaleString('pt-BR', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
-      });
-    };
-
   useEffect(() => {
-    const loadOrder = async () => {
+    const subscribeToOrderUpdates = async () => {
       const orderString = await AsyncStorage.getItem('@lastOrder');
       if (orderString) {
-        setOrder(JSON.parse(orderString));
+        const orderData = JSON.parse(orderString);
+        setOrder(orderData);
+
+        connectToOrderUpdates(orderData.orderId, (newStatus) => {
+          console.log('Status atualizado via SSE:', newStatus);
+
+          if (typeof newStatus === 'string') {
+            setOrder((prevOrder: any) => ({
+              ...prevOrder,
+              status: newStatus.replace(/"/g, '')
+            }));
+            orderData.status = newStatus;
+          } else {
+            console.warn('Status SSE inválido ou indefinido:', newStatus);
+          }
+        });
       }
     };
-    loadOrder();
+
+    subscribeToOrderUpdates();
+
+    return () => {
+      disconnectFromOrderUpdates();
+    };
   }, []);
 
-  if (!order) {
-    return (
-      <View style={styles.container}>
-        <HeaderApp />
-        <View style={styles.content}>
-          <Text style={styles.sectionTitle}>Carregando pedido...</Text>
-        </View>
-        <FooterHome />
-      </View>
-    );
 
-    
+  const formatToBrazilianDate = (dateString: string | undefined | null) => {
+    if (!dateString || typeof dateString !== 'string') {
+      return 'Não informada';
+    }
 
-  }
+    if (dateString === 'Pronta entrega') {
+      return 'Pronta entrega';
+    }
+
+    const date = new Date(dateString.replace(' ', 'T')); // Corrige para padrão ISO
+    return date.toLocaleString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const getProgressPercentage = (status: string) => {
+    switch (status) {
+      case 'PAID':
+        return 0.25;
+      case 'PREPARING':
+        return 0.5;
+      case 'AVAILABLE':
+        return 0.75;
+      case 'FINISHED':
+        return 1;
+      default:
+        return 0;
+    }
+  };
+
+  const getFriendlyStatusMessage = (status: string | undefined) => {
+    switch (status) {
+      case 'PAID':
+        return 'Pedido pago. Aguardando preparação.';
+      case 'PREPARING':
+        return 'Pedido em preparação.';
+      case 'AVAILABLE':
+        return 'Pedido pronto para retirada. Compareça na lanchonete.';
+      case 'FINISHED':
+        return 'Pedido finalizado.';
+      default:
+        return 'Status desconhecido.';
+    }
+  };
+
 
   return (
     <View style={styles.container}>
@@ -50,34 +96,37 @@ const OrderScreen = () => {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Previsão de disponibilidade</Text>
         <Text style={styles.time}>
-          {formatToBrazilianDate(order.availabilityForecast) ?? 'Não informada'}
+          {order?.availabilityForecast ? formatToBrazilianDate(order.availabilityForecast) : 'Não informada'}
         </Text>
+
 
         <Text style={styles.sectionTitle}>Atualização em tempo real</Text>
         <View style={styles.codeContainer}>
           <Text style={styles.codeText}>Código para retirar o pedido</Text>
           <View style={styles.codeBox}>
             <Text style={styles.code}>
-              {order.withdrawalCode ?? '----'}
+              {order?.withdrawalCode ?? '----'}
             </Text>
           </View>
         </View>
 
         <View style={styles.progressBarContainer}>
-          <View style={styles.progressBarFilled} />
-          <View style={styles.progressBarEmpty} />
+          <View style={[styles.progressBarFilled, { flex: getProgressPercentage(order?.status) }]} />
+          <View style={[styles.progressBarEmpty, { flex: 1 - getProgressPercentage(order?.status) }]} />
         </View>
+
         <Text style={styles.statusText}>
-          {order.status ?? 'Preparando seu pedido'}
+          {getFriendlyStatusMessage(order?.status)}
         </Text>
+
 
         <View style={styles.section}>
           <Text style={styles.sectionHeader}>Informações da loja:</Text>
           <Text style={styles.storeName}>
-            {order.store?.name ?? 'Nome da loja não disponível'}
+            {order?.store?.name ?? 'Nome da loja não disponível'}
           </Text>
           <Text style={styles.storeLocation}>
-            Localização: {order.store?.foodCourt ?? '---'}
+            Localização: {order?.store?.foodCourt ?? '---'}
           </Text>
         </View>
 
