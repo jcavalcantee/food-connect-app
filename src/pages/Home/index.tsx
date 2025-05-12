@@ -4,6 +4,7 @@ import { styles } from "./styles";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import HeaderHome from "../../components/HeaderHome";
 import FooterHome from "../../components/FooterHome";
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 import { getProducts } from "../../api/product/apiGetProducts";
 import ProductItem from "../../components/CardProductCategory";
 import ChooseSnackBarModal from "../../components/ChooseSnackBarModal/ChooseSnackBarModal";
@@ -113,6 +114,9 @@ export default function ProfileScreen() {
                 {products.map((category) => renderCategory(category))}
             </ScrollView>
             <FooterHome />
+
+            <AccessibilityButton />
+            
             <ChooseSnackBarModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
