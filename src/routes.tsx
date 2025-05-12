@@ -14,6 +14,7 @@ import ResetPassword from './pages/ResetPassword';
 import PaymentScreen from './pages/payment';
 import CartScreen from './pages/Cart';
 import OrderScreen from './pages/Order';
+import OrderList from './pages/OrderList';
 // Importar outras telas conforme necessário
     
 const Stack = createStackNavigator();
@@ -35,7 +36,8 @@ export default function Routes() {
                 <Stack.Screen name="Notifications" component={Notifications} />
                 <Stack.Screen name="Cart" component={CartScreen} />
                 <Stack.Screen name="Payment" component={PaymentScreen} />
-                <Stack.Screen name="OrderScreen" component={OrderScreen} />	
+                <Stack.Screen name="OrderScreen" component={OrderScreen} />
+                <Stack.Screen name="OrderList" component={OrderList} />
                 {/* Adicione outras telas aqui */}
             </Stack.Navigator>
         </NavigationContainer>
