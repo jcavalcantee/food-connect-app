@@ -163,13 +163,13 @@ export default function RegisterCustomerScreen() {
                     Ao usar este aplicativo, você concorda em cumprir os{' '}
                         <Text 
                     style={{ color: 'blue', textDecorationLine: 'underline' }}
-                    onPress={() => Linking.openURL('https://www.senac.br/termos-de-uso')}>
+                    onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Termos-de-uso.html')}>
                     Termos e condições
                 </Text>{' '}
                 estabelecidos. O aplicativo pode coletar e processar dados pessoais de acordo com a{' '}
                 <Text 
                     style={{ color: 'blue', textDecorationLine: 'underline' }}
-                    onPress={() => Linking.openURL('https://www.senac.br/politica-de-privacidade')}
+                    onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Politicas_privacidade.html')}
                 >
                     Política de Privacidade
                 </Text>.
