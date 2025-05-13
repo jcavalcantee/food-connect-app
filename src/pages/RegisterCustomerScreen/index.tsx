@@ -159,50 +159,50 @@ export default function RegisterCustomerScreen() {
                 onRequestClose={() => setIsTermsModalVisible(false)}>
                 <View style={style.modalContainer}>
                     <View style={style.modalContent}>
-                        <Text style={style.modalTitle}>Termos de Uso</Text>
-                        <Text style={style.modalText}>
-                            Ao usar este aplicativo, você concorda em cumprir os{' '}
-                            <Text
-                                style={{ color: 'blue', textDecorationLine: 'underline' }}
-                                onPress={() => Linking.openURL('https://www.senac.br/termos-de-uso')}>
-                                Termos e condições
-                            </Text>{' '}
-                            estabelecidos. O aplicativo pode coletar e processar dados pessoais de acordo com a{' '}
-                            <Text
-                                style={{ color: 'blue', textDecorationLine: 'underline' }}
-                                onPress={() => Linking.openURL('https://www.senac.br/politica-de-privacidade')}
-                            >
-                                Política de Privacidade
-                            </Text>.
-                        </Text>
-                        <Text style={style.modalText}>
-                            Ao clicar em "Aceitar", você concorda que leu e está de acordo com os termos acima.
-                        </Text>
-                        <View style={style.modalButtons}>
-                            <TouchableOpacity
-                                style={style.modalButton}
-                                onPress={() => {
-                                    if (isValid) {
-                                        setIsTermsModalVisible(false);
-                                        handleSubmit(handleRegisterCustomer)(); // Envia os dados de cadastro
-                                    } else {
-                                        Alert.alert("Erro", "Preencha todos os campos corretamente antes de aceitar os termos.");
-                                    }
-                                }}
-                            >
-                                <Text style={style.modalButtonText}>Aceitar</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity
-                                style={[style.modalButton, { backgroundColor: 'red' }]} // Botão "Fechar" com cor diferente
-                                onPress={() => setIsTermsModalVisible(false)} // Fecha o modal
-                            >
-                                <Text style={style.modalButtonText}>Fechar</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
-            <AccessibilityButton />
+                    <Text style={style.modalTitle}>Termos de Uso</Text>
+                    <Text style={style.modalText}>
+                    Ao usar este aplicativo, você concorda em cumprir os{' '}
+                        <Text 
+                    style={{ color: 'blue', textDecorationLine: 'underline' }}
+                    onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Termos-de-uso.html')}>
+                    Termos e condições
+                </Text>{' '}
+                estabelecidos. O aplicativo pode coletar e processar dados pessoais de acordo com a{' '}
+                <Text 
+                    style={{ color: 'blue', textDecorationLine: 'underline' }}
+                    onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Politicas_privacidade.html')}
+                >
+                    Política de Privacidade
+                </Text>.
+                    </Text>
+                <Text style={style.modalText}>
+                Ao clicar em "Aceitar", você concorda que leu e está de acordo com os termos acima.
+                </Text>
+                <View style={style.modalButtons}>
+    <TouchableOpacity
+        style={style.modalButton}
+        onPress={() => {
+            if (isValid) {
+                setIsTermsModalVisible(false);
+                handleSubmit(handleRegisterCustomer)(); // Envia os dados de cadastro
+            } else {
+                Alert.alert("Erro", "Preencha todos os campos corretamente antes de aceitar os termos.");
+            }
+        }}
+    >
+        <Text style={style.modalButtonText}>Aceitar</Text>
+    </TouchableOpacity>
+    <TouchableOpacity
+        style={[style.modalButton, { backgroundColor: 'red' }]} // Botão "Fechar" com cor diferente
+        onPress={() => setIsTermsModalVisible(false)} // Fecha o modal
+    >
+        <Text style={style.modalButtonText}>Fechar</Text>
+    </TouchableOpacity>
+</View>
+        </View>
+    </View>
+</Modal>
+<AccessibilityButton />
         </View>
     );
 }
