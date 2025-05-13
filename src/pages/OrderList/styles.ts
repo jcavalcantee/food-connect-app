@@ -1,26 +1,48 @@
-// Orders/styles.ts
 import { StyleSheet } from 'react-native';
+import { themas } from '../../global/themas';
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
+        paddingHorizontal: 16,
+        paddingTop: 10, // ou 20 se não usar SafeAreaView
         backgroundColor: '#fff',
     },
+
     title: {
-        fontSize: 20,
+        fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        textAlign: 'center',
+        color: '#333',
     },
     orderItem: {
+        backgroundColor: '#fff',
         padding: 15,
-        borderWidth: 1,
-        borderColor: '#ddd',
-        borderRadius: 5,
-        marginBottom: 10,
+        borderRadius: 8,
+        marginBottom: 12,
+        elevation: 2,
     },
-    orderText: {
+    orderId: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        marginBottom: 5,
+        color: themas.colors.primary,
+    },
+    orderStatus: {
         fontSize: 16,
+        marginBottom: 5,
+        color: '#555',
+    },
+    orderDate: {
+        fontSize: 14,
+        color: '#666',
+        marginBottom: 5,
+    },
+    orderTotal: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        color: '#000',
     },
     loadingContainer: {
         flex: 1,
