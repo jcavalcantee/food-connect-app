@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { View, Text, Alert, TouchableOpacity, ActivityIndicator} from 'react-native';
+import { View, Text, Alert, TouchableOpacity, ActivityIndicator } from 'react-native';
 import { style } from "./styles";
 import TextInputForms from "../../components/TextInput/inputTextForms";
 import HeaderApp from "../../components/Header/header";
@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loginCustomer } from '../../api/login/apiLoginCustomer';
 import InputPasswordForms from '../../components/PasswordInput';
 import { sendResetPasswordValidationCode } from '../../api/email/apiEmailSender';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 type RootStackParamList = {
     Login: undefined;
@@ -130,9 +131,9 @@ export default function Login() {
                 <TouchableOpacity onPress={() => navigation.navigate('SolicitacaoEmail')}>
                     <Text style={style.cadastrese}>Cadastre-se aqui</Text>
                 </TouchableOpacity>
+
             </View>
-    
-           
+            <AccessibilityButton />
         </View>
     );
 }

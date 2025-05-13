@@ -4,7 +4,7 @@ import { View, Text, FlatList, ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getOrdersByUserId } from '../../api/OrderList/orders';
 import styles from './styles';
-
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 export default function OrderList() {
 
@@ -53,6 +53,7 @@ export default function OrderList() {
                     </View>
                 )}
             />
+            <AccessibilityButton />
         </View>
     );
 }

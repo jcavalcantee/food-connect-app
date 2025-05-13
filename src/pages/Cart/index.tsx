@@ -6,6 +6,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { style } from "./styles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 type RootStackParamList = {
   StoreProducts: undefined;
@@ -154,6 +155,8 @@ export default function SacolaScreen() {
       <TouchableOpacity style={style.payButton} onPress={() => navigation.navigate('Payment')}>
         <Text style={style.payText}>Pagar R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</Text>
       </TouchableOpacity>
+      <AccessibilityButton />
     </ScrollView>
+    
   );
 }
