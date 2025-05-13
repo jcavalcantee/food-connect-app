@@ -20,11 +20,28 @@ const OrderScreen = () => {
           console.log('Status atualizado via SSE:', newStatus);
 
           if (typeof newStatus === 'string') {
-            setOrder((prevOrder: any) => ({
-              ...prevOrder,
-              status: newStatus.replace(/"/g, '')
-            }));
-            orderData.status = newStatus;
+            const cleanStatus = newStatus.replace(/"/g, '');
+
+            setOrder((prevOrder: any) => {
+              const updatedOrder = { ...prevOrder, status: cleanStatus };
+
+              AsyncStorage.setItem('@lastOrder', JSON.stringify(updatedOrder)).catch((err) =>
+                console.error('Erro ao salvar novo status no AsyncStorage:', err)
+              );
+
+              // Se finalizou, limpar o carrinho e o último pedido
+              if (cleanStatus === 'FINISHED') {
+                AsyncStorage.multiRemove(['@cart', '@lastOrder']).then(() => {
+                  console.log('Carrinho e último pedido limpos após finalização');
+                }).catch((err) =>
+                  console.error('Erro ao limpar dados após finalização do pedido:', err)
+                );
+                disconnectFromOrderUpdates();
+              }
+
+              return updatedOrder;
+            });
+
           } else {
             console.warn('Status SSE inválido ou indefinido:', newStatus);
           }
