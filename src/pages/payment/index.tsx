@@ -44,6 +44,7 @@ const createOrder = async (customerId: number, paymentType: string, expectedDeli
     if (response.status === 201 || response.status === 200) {
       console.log("Pedido enviado com sucesso!", response.data);
       await AsyncStorage.setItem('@lastOrder', JSON.stringify(response.data))
+      await AsyncStorage.removeItem('@cartItems'); 
     } else {
       throw new Error(`Erro inesperado: status ${response.status}`);
     }
@@ -66,44 +67,44 @@ const PaymentScreen = () => {
     return () => clearInterval(timer);
   }, []);
 
-  const formatTime = (seconds:number) => {
+  const formatTime = (seconds: number) => {
     const min = Math.floor(seconds / 60);
     const sec = seconds % 60;
     return `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
   };
 
-const copyToClipboard = async () => {
-  try {
-    Clipboard.setString(pixCode);
-    alert('Código copiado!');
+  const copyToClipboard = async () => {
+    try {
+      Clipboard.setString(pixCode);
+      alert('Código copiado!');
 
-    const userInfoString = await AsyncStorage.getItem("userInfo");
+      const userInfoString = await AsyncStorage.getItem("userInfo");
 
-    if (!userInfoString) {
-      alert('Usuário não encontrado no armazenamento.');
-      return;
+      if (!userInfoString) {
+        alert('Usuário não encontrado no armazenamento.');
+        return;
+      }
+
+      const userInfo = JSON.parse(userInfoString);
+      const customerId = userInfo?.id || userInfo?.customerId; // ajuste aqui conforme a estrutura real
+
+      if (!customerId) {
+        alert('ID do cliente não encontrado nos dados do usuário.');
+        return;
+      }
+
+      const prazo = await AsyncStorage.getItem('@prazoEntrega');
+      await createOrder(customerId, "PIX", prazo ?? "Pronta entrega");
+
+      setTimeout(() => {
+        navigation.navigate('OrderScreen');
+      }, 5000);
+
+    } catch (error) {
+      alert('Erro ao processar pedido.');
+      console.error(error);
     }
-
-    const userInfo = JSON.parse(userInfoString);
-    const customerId = userInfo?.id || userInfo?.customerId; // ajuste aqui conforme a estrutura real
-
-    if (!customerId) {
-      alert('ID do cliente não encontrado nos dados do usuário.');
-      return;
-    }
-
-    const prazo = await AsyncStorage.getItem('@prazoEntrega');
-    await createOrder(customerId, "PIX", prazo ?? "Pronta entrega");
-
-    setTimeout(() => {
-      navigation.navigate('OrderScreen');
-    }, 5000);
-
-  } catch (error) {
-    alert('Erro ao processar pedido.');
-    console.error(error);
-  }
-};
+  };
 
   // const progressWidth = `${((5 * 60 - timeLeft) / (5 * 60)) * 100}%`;
   const screenWidth = Dimensions.get('window').width;

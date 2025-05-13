@@ -33,6 +33,9 @@ export default function SacolaScreen() {
         const storedCart = await AsyncStorage.getItem('@cartItems');
         if (storedCart) {
           setItems(JSON.parse(storedCart));
+        } else {
+          console.log('Carrinho limpo após finalização do pedido');
+          setItems([]); 
         }
       };
       fetchCart();
@@ -61,7 +64,7 @@ export default function SacolaScreen() {
       .map(item =>
         item.id === id ? { ...item, quantidade: item.quantidade - 1 } : item
       )
-      .filter(item => item.quantidade > 0); 
+      .filter(item => item.quantidade > 0);
     updateCart(newItems);
   };
 
