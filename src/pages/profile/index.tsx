@@ -8,6 +8,7 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { useNavigation } from "@react-navigation/native";
 import { StackNavigationProp } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 import { Alert } from "react-native";
 
 // Define the RootStackParamList type
@@ -75,6 +76,9 @@ export default function Profile() {
         </View>
       </TouchableOpacity>
       <FooterHome />
+
+      <AccessibilityButton />
+      
     </View>
   );
 }

@@ -17,6 +17,7 @@ import FooterHome from "../../components/FooterHome";
 import { getProductsByStore } from "../../api/product/apiGetProducts";
 import Logo from "../../assets/images/icon.png";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 type Product = {
     id: number;
@@ -217,6 +218,7 @@ export default function StoreProductsScreen() {
                 />
             </View>
             <FooterHome />
+            <AccessibilityButton />
         </>
     );
 }

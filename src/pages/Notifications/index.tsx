@@ -3,6 +3,7 @@ import { View, Text, FlatList, SafeAreaView, ActivityIndicator } from 'react-nat
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { styles } from './styles';
 import { getNotifications } from '../../api/notifications/getNotifications';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 const Notifications = () => {
   interface Notification {
@@ -80,6 +81,7 @@ const Notifications = () => {
           </View>
         )}
       />
+      <AccessibilityButton />
     </View>
   );
 };

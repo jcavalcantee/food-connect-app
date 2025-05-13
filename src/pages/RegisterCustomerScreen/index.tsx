@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { View, Text, Alert, Modal, TouchableOpacity, Linking} from "react-native";
+import { View, Text, Alert, Modal, TouchableOpacity, Linking } from "react-native";
 import HeaderApp from "../../components/Header/header";
 import { style } from "./styles";
 import ControlledTextInput from "../../components/Controller/ControlledTextInput";
@@ -10,6 +10,7 @@ import { useNavigation, useRoute, RouteProp } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import LoadingModal from "../../components/LoadingModal";
 import { TextInputMask } from 'react-native-masked-text'; // Importando a biblioteca de máscara
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 // Tipos da navegação
 type NavigationProp = StackNavigationProp<RootStackParamList, 'RegisterCustomerScreen'>;
@@ -146,9 +147,9 @@ export default function RegisterCustomerScreen() {
                 />
 
                 <View style={style.footer}>
-                <Button title="Cadastrar" onPress={() => setIsTermsModalVisible(true)} />
+                    <Button title="Cadastrar" onPress={() => setIsTermsModalVisible(true)} />
                 </View>
-                
+
             </View>
             <LoadingModal visible={loading} />
             <Modal
@@ -156,7 +157,7 @@ export default function RegisterCustomerScreen() {
                 animationType="slide"
                 transparent={true}
                 onRequestClose={() => setIsTermsModalVisible(false)}>
-                    <View style={style.modalContainer}>
+                <View style={style.modalContainer}>
                     <View style={style.modalContent}>
                     <Text style={style.modalTitle}>Termos de Uso</Text>
                     <Text style={style.modalText}>
@@ -201,6 +202,7 @@ export default function RegisterCustomerScreen() {
         </View>
     </View>
 </Modal>
+<AccessibilityButton />
         </View>
     );
 }

@@ -5,6 +5,7 @@ import HeaderApp from '../../components/Header/header';
 import FooterHome from '../../components/FooterHome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { connectToOrderUpdates, disconnectFromOrderUpdates } from '../../api/order/sse';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 const OrderScreen = () => {
   const [order, setOrder] = useState<any>(null);
@@ -155,6 +156,7 @@ const OrderScreen = () => {
         </View>
       </ScrollView>
       <FooterHome />
+      <AccessibilityButton />
     </View>
   );
 };

@@ -11,6 +11,8 @@ import { getOrdersByUserId } from '../../api/OrderList/orders';
 import styles from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FooterHome from '../../components/FooterHome';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+
 
 export default function OrderList() {
     const [orders, setOrders] = useState<any[]>([]);
@@ -137,6 +139,7 @@ export default function OrderList() {
                 }
             />
             <FooterHome />
+            <AccessibilityButton />
         </View>
     );
 

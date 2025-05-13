@@ -10,6 +10,7 @@ import { sendResetPasswordValidationCode } from '../../api/email/apiEmailSender'
 import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import LoadingModal from '../../components/LoadingModal';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 type RootStackParamList = {
     EmailResetValidation: undefined;
@@ -167,7 +168,7 @@ export default function EmailResetValidation() {
                 />
             </View>
             <LoadingModal visible={loading} />
-
+            <AccessibilityButton />
         </KeyboardAvoidingView>
     );
 }
