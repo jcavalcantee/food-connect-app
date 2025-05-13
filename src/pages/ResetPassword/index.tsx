@@ -7,6 +7,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import InputPasswordForms from '../../components/PasswordInput';
 import { resetPasswordCustomer } from '../../api/resetPassword/apiResetPasswordCustomer';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 type RootStackParamList = {
     ResetPassword: undefined;
@@ -106,6 +107,7 @@ export default function ResetPassword() {
                     <Text style={style.cadastrese}>Voltar à tela de Login</Text>
                 </TouchableOpacity>
             </View>
+            <AccessibilityButton />
         </View>
     );
 }

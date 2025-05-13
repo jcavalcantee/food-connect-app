@@ -9,6 +9,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { sendValidationCode } from "../../api/email/apiEmailSender";
 import { useNavigation } from '@react-navigation/native';
 import LoadingModal from "../../components/LoadingModal";
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 
 type RootStackParamList = {
     Login: undefined;
@@ -101,6 +102,7 @@ export default function SolicitacaoEmail() {
                 </TouchableOpacity>
             </View>
             <LoadingModal visible={loading} />
+            <AccessibilityButton />
         </View>
     );
 }

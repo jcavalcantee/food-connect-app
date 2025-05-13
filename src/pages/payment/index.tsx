@@ -5,6 +5,7 @@ import { Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import order from '../../api/clients/Order'; // ajuste o caminho se necessário
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 // ...outros imports...
 
 // Define your navigation param list
@@ -132,6 +133,7 @@ const copyToClipboard = async () => {
       <View style={styles.progressBarBackground}>
         <View style={[styles.progressBarFill, { width: progressWidth }]} />
       </View>
+      <AccessibilityButton />
     </View>
   );
 };
