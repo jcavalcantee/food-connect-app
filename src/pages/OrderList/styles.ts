@@ -57,14 +57,39 @@ const styles = StyleSheet.create({
     },
     modalContent: {
         backgroundColor: 'white',
-        borderRadius: 10,
+        borderRadius: 16,
         padding: 20,
-        width: '80%',
+        width: '90%',
+        maxHeight: '80%',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.25,
+        shadowRadius: 8,
+        elevation: 8,
     },
     modalTitle: {
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 12,
+        color: themas.colors.primary,
+        textAlign: 'center',
+    },
+    sectionTitle: {
+        fontSize: 16,
+        fontWeight: 'bold',
+        marginTop: 16,
+        marginBottom: 8,
+        color: '#333',
+    },
+    productItem: {
+        fontSize: 14,
+        marginBottom: 4,
+        color: '#444',
+    },
+    orderInfo: {
+        marginBottom: 8,
+        fontSize: 14,
+        color: '#555',
     },
 });
 

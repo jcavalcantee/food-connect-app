@@ -7,16 +7,19 @@ import {
     RefreshControl,
     TouchableOpacity,
     Button,
-    Modal
+    Modal,
+    ScrollView
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getOrdersByUserId } from '../../api/OrderList/orders';
+import { getOrdersByUserId } from '../../api/orderList/orders';
 import styles from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FooterHome from '../../components/FooterHome';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import { getOrderDetailsById } from '../../api/orderDetails/orderDetails';
+import { themas } from '../../global/themas';
 
 type RootStackParamList = {
     Order: undefined;
@@ -34,11 +37,23 @@ export default function OrderList() {
     const insets = useSafeAreaInsets();
     const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
     const [modalVisible, setModalVisible] = useState(false);
+    const [orderDetails, setOrderDetails] = useState<any | null>(null);
+    const [detailsLoading, setDetailsLoading] = useState(false);
     const navigation = useNavigation<NavigationProp>();
 
-    const openOrderDetails = (order: any) => {
+    const openOrderDetails = async (order: any) => {
         setSelectedOrder(order);
         setModalVisible(true);
+        setDetailsLoading(true);
+
+        try {
+            const details = await getOrderDetailsById(order.orderId);
+            setOrderDetails(details);
+        } catch (error) {
+            console.error('Erro ao buscar detalhes do pedido:', error);
+        } finally {
+            setDetailsLoading(false);
+        }
     };
 
     const closeModal = () => {
@@ -91,15 +106,15 @@ export default function OrderList() {
     const getFriendlyStatusMessage = (status: string | undefined) => {
         switch (status) {
             case 'PAID':
-                return '✔️ Pedido pago. Aguardando preparação.';
+                return 'Pedido pago. Aguardando preparação.';
             case 'PREPARING':
-                return '🍳 Pedido em preparação.';
+                return 'Pedido em preparação.';
             case 'AVAILABLE':
-                return '📦 Pedido pronto para retirada!';
+                return 'Pedido pronto para retirada!';
             case 'FINISHED':
-                return '✅ Pedido finalizado.';
+                return 'Pedido finalizado.';
             case 'CANCELED':
-                return '❌ Pedido cancelado.';
+                return 'Pedido cancelado.';
             default:
                 return 'Status desconhecido.';
         }
@@ -170,27 +185,51 @@ export default function OrderList() {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        {selectedOrder && (
+                        {detailsLoading ? (
+                            <ActivityIndicator size="large" color="#007BFF" />
+                        ) : orderDetails ? (
                             <>
-                                <Text style={styles.modalTitle}>Detalhes do Pedido #{selectedOrder.orderId}</Text>
-                                <Text>Status: {getFriendlyStatusMessage(selectedOrder.orderStatus)}</Text>
-                                <Text>Data: {formatToBrazilianDate(selectedOrder.orderDate)}</Text>
-                                <Text>Total: R$ {selectedOrder.totalPrice.toFixed(2)}</Text>
+                                <Text style={styles.modalTitle}>Pedido #{orderDetails.orderId}</Text>
+                                <Text style={styles.sectionTitle}>Resumo:</Text>
+                                <Text style={styles.orderInfo}>{getFriendlyStatusMessage(orderDetails.status)}</Text>
+                                <Text style={styles.orderInfo}>Última atualização: {formatToBrazilianDate(orderDetails.statusDate)}</Text>
+                                <Text style={styles.orderInfo}>Código de retirada: {orderDetails.withdrawalCode}</Text>
+                                <Text style={styles.orderInfo}>Total: R$ {orderDetails.totalPrice}</Text>
+                                <Text style={styles.orderInfo}>Loja: {orderDetails.store.name} - {orderDetails.store.foodCourt}</Text>
 
-                                {/* Botão Condicional */}
-                                {selectedOrder.orderStatus !== 'FINISHED' && selectedOrder.orderStatus !== 'CANCELED' && (
-                                    <Button
-                                        title="Ver Pedido"
-                                        onPress={async () => {
-                                            await AsyncStorage.setItem('@lastOrderId', String(selectedOrder.orderId));
-                                            closeModal();
-                                            navigation.navigate('Order');
-                                        }}
-                                    />
-                                )}
-                                <Button title="Fechar" onPress={closeModal} />
+                                <Text style={styles.sectionTitle}>Produtos:</Text>
+                                <View style={{ maxHeight: 100 }}>
+                                    <ScrollView>
+                                        {orderDetails.products.map((prod: any, index: number) => (
+                                            <Text key={index} style={styles.productItem}>
+                                                {prod.quantity}x {prod.productName} - R$ {prod.price.toFixed(2)}
+                                            </Text>
+                                        ))}
+                                    </ScrollView>
+                                </View>
+
+
+                                <View style={{ marginTop: 20 }}>
+                                    {orderDetails.status !== 'FINISHED' && orderDetails.status !== 'CANCELED' && (
+                                        <Button
+                                            title="Acompanhar pedido"
+                                            onPress={async () => {
+                                                await AsyncStorage.setItem('@lastOrderId', String(orderDetails.orderId));
+                                                closeModal();
+                                                navigation.navigate('Order');
+                                            }}
+                                            color={themas.colors.primary}
+                                        />
+                                    )}
+                                    <View style={{ height: 10 }} />
+                                    <Button title="Fechar" onPress={closeModal} color="#999" />
+                                </View>
+
                             </>
+                        ) : (
+                            <Text>Erro ao carregar detalhes.</Text>
                         )}
+
                     </View>
                 </View>
             </Modal>
