@@ -3,7 +3,6 @@ import productClient from "../clients/productClient";
 export async function getProducts() {
     try {
         const response = await productClient.get("/product/distinct-query");
-        console.info("Requisição para o IP:", productClient.defaults.baseURL);
         if (response.status === 200) {
             return response.data;
         } else {
@@ -19,7 +18,6 @@ export async function getProducts() {
         } else {
             console.error("Erro na requisição:", error.message);
         }
-        throw error;
     }
 }
 
@@ -30,7 +28,6 @@ export async function getProductsByStore(storeId: number) {
                 storeId,
             },
         });
-        console.info("Requisição para o IP:", productClient.defaults.baseURL);
         if (response.status === 200) {
             return response.data;
         } else {
@@ -46,6 +43,5 @@ export async function getProductsByStore(storeId: number) {
         } else {
             console.error("Erro na requisição:", error.message);
         }
-        throw error;
     }
 }

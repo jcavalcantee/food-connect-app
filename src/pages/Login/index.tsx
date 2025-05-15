@@ -10,6 +10,7 @@ import { loginCustomer } from '../../api/login/apiLoginCustomer';
 import InputPasswordForms from '../../components/PasswordInput';
 import { sendResetPasswordValidationCode } from '../../api/email/apiEmailSender';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 
 type RootStackParamList = {
     Login: undefined;
@@ -25,6 +26,10 @@ export default function Login() {
     const [password, setPassword] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
     const [emailError, setEmailError] = useState<string | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
+    const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
     const navigation = useNavigation<NavigationProp>();
 
     const validateEmail = (email: string) => {
@@ -42,12 +47,16 @@ export default function Login() {
 
     const handleLogin = async () => {
         if (!email || !password) {
-            Alert.alert("Erro", "Preencha todos os campos!");
+            setModalTitle("Erro");
+            setModalMessage("Preencha todos os campos!");
+            setModalVisible(true);
             return;
         }
 
         if (emailError) {
-            Alert.alert("Erro", "Corrija o e-mail antes de continuar!");
+            setModalTitle("Erro");
+            setModalMessage("Corrija o e-mail antes de continuar!");
+            setModalVisible(true);
             return;
         }
 
@@ -55,15 +64,21 @@ export default function Login() {
 
         try {
             const response = await loginCustomer(email, password);
-            if (response.status === 200) {
+            if (response.status === "Sucesso") {
                 await AsyncStorage.setItem("userInfo", JSON.stringify(response.data.customerInfo));
-                Alert.alert(response.data.status, response.data.message);
-                navigation.navigate('Home');
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setOnModalCloseAction(() => () => navigation.navigate('Home'));
+                setModalVisible(true);
             } else {
-                Alert.alert(response.data.status, response.data.message);
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setModalVisible(true);
             }
         } catch (error) {
-            Alert.alert("Erro", "Erro ao conectar com o servidor" + error);
+            setModalTitle("Erro");
+            setModalMessage("Erro ao realizar requisição. Tente novamente mais tarde.");
+            setModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -71,12 +86,16 @@ export default function Login() {
 
     const handleResetPassword = async () => {
         if (!email) {
-            Alert.alert("Erro", "Preencha o campo de e-mail!");
+            setModalTitle("Erro");
+            setModalMessage("Preencha o campo de e-mail!");
+            setModalVisible(true);
             return;
         }
 
         if (emailError) {
-            Alert.alert("Erro", "Corrija o e-mail antes de continuar!");
+            setModalTitle("Erro");
+            setModalMessage("Corrija o e-mail antes de continuar!");
+            setModalVisible(true);
             return;
         }
 
@@ -84,13 +103,21 @@ export default function Login() {
 
         try {
             const response = await sendResetPasswordValidationCode(email);
-            if (response === 201) {
-                Alert.alert("Email enviado com sucesso!");
+            if (response.status === "Sucesso") {
                 await saveValue(email);
-                navigation.navigate('EmailResetValidation');
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setOnModalCloseAction(() => () => navigation.navigate('EmailResetValidation'));
+                setModalVisible(true);
+            } else {
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setModalVisible(true);
             }
         } catch (error) {
-            Alert.alert("Algo deu errado.\nTente mais tarde!");
+            setModalTitle("Erro");
+            setModalMessage("Algo deu errado. Tente mais tarde!");
+            setModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -99,9 +126,16 @@ export default function Login() {
     const saveValue = async (email: string) => {
         try {
             await AsyncStorage.setItem('resetEmail', email);
-            console.info(`Email enviado com sucesso para: ${email}`);
         } catch (e) {
             console.error("Erro ao salvar email", e);
+        }
+    };
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (onModalCloseAction) {
+            onModalCloseAction();
+            setOnModalCloseAction(null);
         }
     };
 
@@ -134,6 +168,12 @@ export default function Login() {
 
             </View>
             <AccessibilityButton />
+            <InfoModal
+                visible={modalVisible}
+                onClose={handleModalClose}
+                title={modalTitle}
+                message={modalMessage}
+            />
         </View>
     );
 }
