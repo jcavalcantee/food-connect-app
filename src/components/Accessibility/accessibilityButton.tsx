@@ -3,22 +3,6 @@ import { TouchableOpacity, Alert, Animated, PanResponder, Dimensions } from 'rea
 import { style } from './styles';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
 
-// const AccessibilityButton = () => {
-//     const handlePress = () => {
-//         Alert.alert(
-//             "Acessibilidade",
-//             "Funções disponíveis:\n- Alto contraste\n- Ajuste de fonte\n- Navegação simplificada",
-//             [{ text: "OK" }]
-//         );
-//     };
-
-//     return (
-//         <TouchableOpacity style={style.button} onPress={handlePress}>
-//             <FontAwesome name="universal-access" size={30} color="#fff" />
-//         </TouchableOpacity>
-//     );
-// };
-
 const screenHeight = Dimensions.get('window').height;
 
 const AccessibilityButton = () => {
