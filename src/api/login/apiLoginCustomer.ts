@@ -6,19 +6,27 @@ export async function loginCustomer(email: string, password: string) {
             email,
             password,
         });
-        return response;
+        return {
+            status: 'Sucesso',
+            data: response.data,
+            message: response.data.message
+        };
     } catch (error: any) {
         if (error.response) {
-            console.error("Erro de resposta do servidor:", error.response.data);
-            console.error("Status code:", error.response.status);
-            console.error("Headers:", error.response.headers);
-            throw new Error(`Erro do servidor: ${error.response.status} - ${error.response.data}`);
+            return {
+                status: 'Erro',
+                message: error.response.data.message
+            };
         } else if (error.request) {
-            console.error("Resposta não recebida:", error.request);
-            throw new Error("Nenhuma resposta recebida do servidor. Verifique sua conexão de rede.");
+            return {
+                status: 'Erro',
+                message: "Nenhuma resposta recebida do servidor. Verifique sua conexão de rede."
+            };
         } else {
-            console.error("Erro na requisição:", error.message);
-            throw new Error(`Erro na requisição: ${error.message}`);
+            return {
+                status: 'Erro',
+                message: `Erro na requisição. Tente novamente mais tarde.`
+            };
         }
     }
 }

@@ -7,37 +7,34 @@ export async function sendValidationCode(email: string) {
     const validDomains = /@(senacsp\.edu\.br|sp\.senac\.br)$/;
 
     if (!validDomains.test(email)) {
-        Alert.alert("Domínio de email inválido.");
-        return;
+        return { status: 'Erro', message: "Domínio de email inválido." };
     }
 
     try {
-        console.info("Email enviado para: ", email);
-        console.info("Requisição para o IP:", ACCESS_IP_API);
         const response = await apiEmailSender.post(`/send-email?email=${email}`);
-        console.info("URL API: ", apiEmailSender.defaults.baseURL);
 
         if (response.status === 201) {
-            console.info(response.data);
-            return response.status;
+            return { status: 'Sucesso', message: "Email enviado com sucesso!" };
         } else {
-            throw new Error(`Status de resposta não esperado: ${response.status}`);
+            return { status: 'Erro', message: `${response.data.message}` };
         }
     } catch (error: any) {
         if (error.response) {
-            console.error("Erro de resposta do servidor:", error.response.data);
-            console.error("Status code:", error.response.status);
-            console.error("Headers:", error.response.headers);
-            Alert.alert("Erro do servidor", `Status: ${error.response.status}\nMensagem: ${error.response.data}`);
+            return {
+                status: 'Erro',
+                message: `${error.response.data}`
+            };
         } else if (error.request) {
-            console.error("Resposta não recebida:", error.request);
-            Alert.alert("Erro de rede", "Nenhuma resposta recebida do servidor. Verifique sua conexão de rede.");
+            return {
+                status: 'Erro',
+                message: "Erro de rede: Nenhuma resposta recebida do servidor. Verifique sua conexão de rede."
+            };
         } else {
-            console.error("Erro na requisição:", error.message);
-            Alert.alert("Erro na requisição", `Mensagem: ${error.message}`);
+            return {
+                status: 'Erro',
+                message: `Erro na requisição. Tente novamente mais tarde.`
+            };
         }
-        console.error("Config:", error.config);
-        throw error;
     }
 };
 
@@ -45,33 +42,33 @@ export async function sendResetPasswordValidationCode(email: string) {
     const validDomains = /@(senacsp\.edu\.br|sp\.senac\.br)$/;
 
     if (!validDomains.test(email)) {
-        Alert.alert("Domínio de email inválido.");
-        return;
+        return { status: 'Erro', message: "Domínio de email inválido." };
     }
 
     try {
         const response = await apiEmailSender.post(`/send-email/resetPassword?email=${email}`);
 
         if (response.status === 201) {
-            console.info(response.data);
-            return response.status;
+            return { status: 'Sucesso', message: "Email enviado com sucesso!" };
         } else {
-            throw new Error(`Status de resposta não esperado: ${response.status}`);
+            return { status: 'Erro', message: `${response.data.message}` };
         }
     } catch (error: any) {
         if (error.response) {
-            console.error("Erro de resposta do servidor:", error.response.data);
-            console.error("Status code:", error.response.status);
-            console.error("Headers:", error.response.headers);
-            Alert.alert("Erro do servidor", `Status: ${error.response.status}\nMensagem: ${error.response.data}`);
+            return {
+                status: 'Erro',
+                message: `${error.response.data}`
+            };
         } else if (error.request) {
-            console.error("Resposta não recebida:", error.request);
-            Alert.alert("Erro de rede", "Nenhuma resposta recebida do servidor. Verifique sua conexão de rede.");
+            return {
+                status: 'Erro',
+                message: "Erro de rede: Nenhuma resposta recebida do servidor. Verifique sua conexão de rede."
+            };
         } else {
-            console.error("Erro na requisição:", error.message);
-            Alert.alert("Erro na requisição", `Mensagem: ${error.message}`);
+            return {
+                status: 'Erro',
+                message: `Erro na requisição. Tente novamente mais tarde.`
+            };
         }
-        console.error("Config:", error.config);
-        throw error;
     }
 }

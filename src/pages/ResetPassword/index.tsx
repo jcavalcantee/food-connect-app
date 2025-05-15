@@ -8,6 +8,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import InputPasswordForms from '../../components/PasswordInput';
 import { resetPasswordCustomer } from '../../api/resetPassword/apiResetPasswordCustomer';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 
 type RootStackParamList = {
     ResetPassword: undefined;
@@ -23,6 +24,10 @@ export default function ResetPassword() {
     const [passwordError, setPasswordError] = useState<string | null>(null);
     const [confirmPasswordError, setConfirmPasswordError] = useState<string | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
+    const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
     const navigation = useNavigation<NavigationProp>();
 
     useEffect(() => {
@@ -58,12 +63,16 @@ export default function ResetPassword() {
 
     const handleResetPassword = async () => {
         if (!password || !confirmPassword) {
-            Alert.alert("Erro", "Preencha todos os campos!");
+            setModalTitle("Erro");
+            setModalMessage("Preencha todos os campos!");
+            setModalVisible(true);
             return;
         }
 
         if (passwordError || confirmPasswordError) {
-            Alert.alert("Erro", "Corrija os erros antes de continuar!");
+            setModalTitle("Erro");
+            setModalMessage("Corrija os erros antes de continuar!");
+            setModalVisible(true);
             return;
         }
 
@@ -72,15 +81,28 @@ export default function ResetPassword() {
         try {
             const response = await resetPasswordCustomer(email, password);
             if (response.status === 200) {
-                Alert.alert("Status: " + response.status, response.data);
-                navigation.navigate('Login');
+                setModalTitle("Sucesso");
+                setModalMessage("Senha redefinida com sucesso!");
+                setOnModalCloseAction(() => () => navigation.navigate('Login'));
+                setModalVisible(true);
             }
         } catch (error) {
-            Alert.alert("Erro", "Algo deu errado. Tente novamente mais tarde.");
+            setModalTitle("Erro");
+            setModalMessage("Algo deu errado. Tente novamente mais tarde.");
+            setOnModalCloseAction(() => () => navigation.navigate('Login'));
+            setModalVisible(true);
         } finally {
             setLoading(false);
         }
     }
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (onModalCloseAction) {
+            onModalCloseAction();
+            setOnModalCloseAction(null);
+        }
+    };
 
     return (
         <View style={style.container}>
@@ -108,6 +130,12 @@ export default function ResetPassword() {
                 </TouchableOpacity>
             </View>
             <AccessibilityButton />
+            <InfoModal
+                visible={modalVisible}
+                title={modalTitle}
+                message={modalMessage}
+                onClose={handleModalClose}
+            />
         </View>
     );
 }

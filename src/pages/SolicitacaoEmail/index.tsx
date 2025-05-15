@@ -10,6 +10,7 @@ import { sendValidationCode } from "../../api/email/apiEmailSender";
 import { useNavigation } from '@react-navigation/native';
 import LoadingModal from "../../components/LoadingModal";
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 
 type RootStackParamList = {
     Login: undefined;
@@ -23,12 +24,18 @@ export default function SolicitacaoEmail() {
     const [email, setEmail] = useState<string>('');
     const [savedValue, setSavedValue] = useState('');
     const [loading, setLoading] = useState(false);
-
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
+    const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
     const navigation = useNavigation<SolicitacaoEmailNavigationProp>();
 
     const handleValidationEmail = async () => {
         if (!email) {
-            Alert.alert("Por favor, insira um email!");
+            // Alert.alert("Por favor, insira um email!");
+            setModalTitle("Erro");
+            setModalMessage("Por favor, insira um email!");
+            setModalVisible(true);
             return;
         }
 
@@ -36,13 +43,25 @@ export default function SolicitacaoEmail() {
             setLoading(true);
             const response = await sendValidationCode(email);
 
-            if (response === 201) {
-                Alert.alert("Email enviado com sucesso!");
+            if (response.status === "Sucesso") {
+                // Alert.alert("Email enviado com sucesso!");
                 await saveValue(email);
-                navigation.navigate('EmailValidation');
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setOnModalCloseAction(() => () => navigation.navigate('EmailValidation'));
+                setModalVisible(true);
+            } else {
+                // Alert.alert("Erro", response.message);
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setModalVisible(true);
             }
         } catch (error) {
-            Alert.alert("Algo deu errado.\nTente mais tarde!");
+            // Alert.alert("Algo deu errado.\nTente mais tarde!");
+            setModalTitle("Erro");
+            setModalMessage("Algo deu errado.\nTente mais tarde!");
+            setOnModalCloseAction(() => () => navigation.navigate('Login'));
+            setModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -66,6 +85,14 @@ export default function SolicitacaoEmail() {
             }
         } catch (e) {
             console.error("Erro ao recuperar email", e);
+        }
+    };
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (onModalCloseAction) {
+            onModalCloseAction();
+            setOnModalCloseAction(null);
         }
     };
 
@@ -103,6 +130,12 @@ export default function SolicitacaoEmail() {
             </View>
             <LoadingModal visible={loading} />
             <AccessibilityButton />
+            <InfoModal
+                visible={modalVisible}
+                onClose={handleModalClose}
+                title={modalTitle}
+                message={modalMessage}
+            />
         </View>
     );
 }
