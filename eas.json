@@ -3,6 +3,13 @@
       "version": ">= 3.0.0"
     },
     "build": {
+      "development": {
+        "developmentClient": false,
+        "distribution": "internal",
+        "env": {
+          "EXPO_PUBLIC_ACCESS_IP_API": "http://4.201.144.173"
+        }
+      },
       "production": {
         "developmentClient": false,
         "distribution": "internal",
