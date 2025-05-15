@@ -7,15 +7,16 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { connectToOrderUpdates, disconnectFromOrderUpdates } from '../../api/order/sse';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 import * as Notifications from 'expo-notifications';
+import { getOrderId } from '../../api/order/order';
 
 const OrderScreen = () => {
   const [order, setOrder] = useState<any>(null);
 
   useEffect(() => {
     const subscribeToOrderUpdates = async () => {
-      const orderString = await AsyncStorage.getItem('@lastOrder');
-      if (orderString) {
-        const orderData = JSON.parse(orderString);
+      const orderId = await AsyncStorage.getItem('@lastOrderId');
+      if (orderId) {
+        const orderData = await getOrderId(Number(orderId));
         setOrder(orderData);
 
         connectToOrderUpdates(orderData.orderId, (newStatus) => {

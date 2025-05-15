@@ -16,30 +16,28 @@ import CartScreen from './pages/Cart';
 import OrderScreen from './pages/Order';
 import OrderList from './pages/OrderList';
 // Importar outras telas conforme necessário
-    
+
 const Stack = createStackNavigator();
 
 export default function Routes() {
     return (
-        <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }}>
-                <Stack.Screen name="Login" component={Login} />
-                <Stack.Screen name="Home" component={Home} />
-                <Stack.Screen name="StoreProducts" component={StoreProductsScreen} />
-                <Stack.Screen name="SolicitacaoEmail" component={SolicitacaoEmail} />
-                <Stack.Screen name="EmailValidation" component={EmailValidation} />
-                <Stack.Screen name="EmailResetValidation" component={EmailResetValidation} />
-                <Stack.Screen name="ResetPassword" component={ResetPassword} />
-                <Stack.Screen name="RegisterCustomerScreen" component={RegisterCustomerScreen} />
-                <Stack.Screen name="AlterUser" component={AlterUser} />
-                <Stack.Screen name="Profile" component={Profile} />
-                <Stack.Screen name="Notifications" component={Notifications} />
-                <Stack.Screen name="Cart" component={CartScreen} />
-                <Stack.Screen name="Payment" component={PaymentScreen} />
-                <Stack.Screen name="OrderScreen" component={OrderScreen} />
-                <Stack.Screen name="OrderList" component={OrderList} />
-                {/* Adicione outras telas aqui */}
-            </Stack.Navigator>
-        </NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+            <Stack.Screen name="Login" component={Login} />
+            <Stack.Screen name="Home" component={Home} />
+            <Stack.Screen name="StoreProducts" component={StoreProductsScreen} />
+            <Stack.Screen name="SolicitacaoEmail" component={SolicitacaoEmail} />
+            <Stack.Screen name="EmailValidation" component={EmailValidation} />
+            <Stack.Screen name="EmailResetValidation" component={EmailResetValidation} />
+            <Stack.Screen name="ResetPassword" component={ResetPassword} />
+            <Stack.Screen name="RegisterCustomerScreen" component={RegisterCustomerScreen} />
+            <Stack.Screen name="AlterUser" component={AlterUser} />
+            <Stack.Screen name="Profile" component={Profile} />
+            <Stack.Screen name="Notifications" component={Notifications} />
+            <Stack.Screen name="Cart" component={CartScreen} />
+            <Stack.Screen name="Payment" component={PaymentScreen} />
+            <Stack.Screen name="Order" component={OrderScreen} />
+            <Stack.Screen name="OrderList" component={OrderList} />
+            {/* Adicione outras telas aqui */}
+        </Stack.Navigator>
     );
 }

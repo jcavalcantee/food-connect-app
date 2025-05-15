@@ -69,3 +69,15 @@ export async function createOrder(
     throw error;
   }
 }
+
+export async function getOrderId(orderId: number) {
+    try {
+        const response = await order.get(`/orders/order/app`, {
+            params: { orderId },
+        });
+        return response.data;
+    } catch (error) {
+        console.error('Erro ao buscar pedidos:', error);
+        throw error;
+    }
+}

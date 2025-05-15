@@ -11,7 +11,7 @@ import AccessibilityButton from "../../components/Accessibility/accessibilityBut
 // Define your navigation param list
 type RootStackParamList = {
   PaymentScreen: undefined;
-  OrderScreen: undefined;
+  Order: undefined;
 };
 
 const createOrder = async (customerId: number, paymentType: string, expectedDeliveryTime: string) => {
@@ -43,8 +43,9 @@ const createOrder = async (customerId: number, paymentType: string, expectedDeli
 
     if (response.status === 201 || response.status === 200) {
       console.log("Pedido enviado com sucesso!", response.data);
-      await AsyncStorage.setItem('@lastOrder', JSON.stringify(response.data))
-      await AsyncStorage.removeItem('@cartItems'); 
+      const orderId = response.data?.orderId;
+      await AsyncStorage.setItem('@lastOrderId', String(orderId));
+      await AsyncStorage.removeItem('@cartItems');
     } else {
       throw new Error(`Erro inesperado: status ${response.status}`);
     }
@@ -97,7 +98,7 @@ const PaymentScreen = () => {
       await createOrder(customerId, "PIX", prazo ?? "Pronta entrega");
 
       setTimeout(() => {
-        navigation.navigate('OrderScreen');
+        navigation.navigate('Order');
       }, 5000);
 
     } catch (error) {

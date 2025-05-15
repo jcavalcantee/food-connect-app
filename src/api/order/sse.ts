@@ -2,7 +2,8 @@ import { EventSourcePolyfill } from 'event-source-polyfill';
 
 let eventSource: EventSourcePolyfill | null = null;
 
-const ACCESS_IP_API = process.env.EXPO_PUBLIC_ACCESS_IP_API;
+// const ACCESS_IP_API = process.env.EXPO_PUBLIC_ACCESS_IP_API;
+const ACCESS_IP_API = "http://10.0.0.58";
 
 export function connectToOrderUpdates(
   orderId: number,
