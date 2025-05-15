@@ -10,7 +10,6 @@ import { NavigationContainer } from '@react-navigation/native';
 // Configura o comportamento padrão das notificações
 Notifications.setNotificationHandler({
   handleNotification: async (notification) => ({
-    shouldShowAlert: true, // Mostra notificação na tela
     shouldPlaySound: true, // Toca som
     shouldSetBadge: false, // Não configura o número de notificações no ícone
     shouldShowBanner: true, // Mostra banner de notificação

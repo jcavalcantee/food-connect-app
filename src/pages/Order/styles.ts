@@ -78,5 +78,15 @@ export const styles = StyleSheet.create({
     color: '#333',
     lineHeight: 20,
   },
+  title: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+  titleText: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    color: '#e53935',
+    marginBottom: 8,
+  },
 });
 
