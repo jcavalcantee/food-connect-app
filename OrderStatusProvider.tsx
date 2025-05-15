@@ -52,22 +52,41 @@ export const OrderStatusProvider = ({ children }: { children: ReactNode }) => {
 
             sseConnected.current = true;
 
-            connectToOrderUpdates(orderId, async (newStatus) => {
-                const cleanStatus = newStatus?.replace(/"/g, '');
-                const updatedOrder = { ...orderData, status: cleanStatus };
-                setOrder(updatedOrder);
+            connectToOrderUpdates(orderData.orderId, (newStatus) => {
+                console.log('Status atualizado via SSE:', newStatus);
 
-                await Notifications.scheduleNotificationAsync({
-                    content: {
-                        title: 'Atualização do pedido',
-                        body: getFriendlyStatusMessage(cleanStatus),
-                    },
-                    trigger: null,
-                });
+                if (typeof newStatus === 'string') {
+                    const cleanStatus = newStatus.replace(/"/g, '');
 
-                if (cleanStatus === 'FINISHED') {
-                    await AsyncStorage.multiRemove(['@cartItems', '@lastOrderId']);
-                    disconnect();
+                    setOrder((prevOrder: any) => {
+                        const updatedOrder = { ...prevOrder, status: cleanStatus };
+
+                        AsyncStorage.setItem('@lastOrder', JSON.stringify(updatedOrder)).catch((err) =>
+                            console.error('Erro ao salvar novo status no AsyncStorage:', err)
+                        );
+
+                        // Notificação local aqui
+                        Notifications.scheduleNotificationAsync({
+                            content: {
+                                title: 'Atualização do pedido',
+                                body: getFriendlyStatusMessage(cleanStatus),
+                            },
+                            trigger: null,
+                        });
+
+                        if (cleanStatus === 'FINISHED') {
+                            AsyncStorage.multiRemove(['@cart', '@lastOrder']).then(() => {
+                                console.log('Carrinho e último pedido limpos após finalização');
+                            }).catch((err) =>
+                                console.error('Erro ao limpar dados após finalização do pedido:', err)
+                            );
+                            disconnectFromOrderUpdates();
+                        }
+
+                        return updatedOrder;
+                    });
+                } else {
+                    console.warn('Status SSE inválido ou indefinido:', newStatus);
                 }
             });
         } catch (error) {

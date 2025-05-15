@@ -7,6 +7,7 @@ import { style } from "./styles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 
 type RootStackParamList = {
   StoreProducts: undefined;
@@ -26,6 +27,10 @@ type CartItem = {
 export default function SacolaScreen() {
   const navigation = useNavigation<NavigationProp>();
   const [items, setItems] = useState<CartItem[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState<string>('');
+  const [modalMessage, setModalMessage] = useState<string>('');
+  const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
 
   useFocusEffect(
     React.useCallback(() => {
@@ -35,7 +40,7 @@ export default function SacolaScreen() {
           setItems(JSON.parse(storedCart));
         } else {
           console.log('Carrinho limpo após finalização do pedido');
-          setItems([]); 
+          setItems([]);
         }
       };
       fetchCart();
@@ -68,6 +73,17 @@ export default function SacolaScreen() {
     updateCart(newItems);
   };
 
+  const goToPayment = () => {
+    if (items.length > 0) {
+      navigation.navigate('Payment');
+    } else {
+      setModalTitle("Erro");
+      setModalMessage("Preencha o carrinho antes de continuar!");
+      setModalVisible(true);
+      return;
+    }
+  }
+
   const total = items.reduce((acc, item) => acc + item.preco * item.quantidade, 0);
 
   const parseEstimativa = (estimativa?: string): number => {
@@ -82,6 +98,14 @@ export default function SacolaScreen() {
 
   const prazoEntrega = maiorEstimativa === 0 ? 'Pronta entrega' : `${maiorEstimativa} minutos`;
   AsyncStorage.setItem('@prazoEntrega', prazoEntrega);
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    if (onModalCloseAction) {
+      onModalCloseAction();
+      setOnModalCloseAction(null);
+    }
+  };
 
   return (
     <ScrollView contentContainerStyle={style.container}>
@@ -155,11 +179,18 @@ export default function SacolaScreen() {
         </View>
       </View>
 
-      <TouchableOpacity style={style.payButton} onPress={() => navigation.navigate('Payment')}>
+      <TouchableOpacity style={style.payButton} onPress={() => goToPayment()}>
         <Text style={style.payText}>Pagar R$ {total.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</Text>
       </TouchableOpacity>
       <AccessibilityButton />
+      <InfoModal
+        visible={modalVisible}
+        onClose={handleModalClose}
+        title={modalTitle}
+        message={modalMessage}
+      />
     </ScrollView>
-    
+
+
   );
 }

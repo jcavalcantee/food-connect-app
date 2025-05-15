@@ -121,6 +121,8 @@ const OrderScreen = () => {
     <View style={styles.container}>
       <HeaderApp />
       <ScrollView contentContainerStyle={styles.content}>
+          <Text style={styles.sectionTitle}>Número do pedido:</Text>
+          <Text style={styles.titleText}>{order?.orderId ?? '----'}</Text>
         <Text style={styles.sectionTitle}>Previsão de disponibilidade</Text>
         <Text style={styles.time}>
           {order?.availabilityForecast ? formatToBrazilianDate(order.availabilityForecast) : 'Não informada'}
