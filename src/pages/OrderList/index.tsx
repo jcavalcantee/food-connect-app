@@ -4,7 +4,10 @@ import {
     Text,
     FlatList,
     ActivityIndicator,
-    RefreshControl
+    RefreshControl,
+    TouchableOpacity,
+    Button,
+    Modal
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { getOrdersByUserId } from '../../api/OrderList/orders';
@@ -12,7 +15,14 @@ import styles from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FooterHome from '../../components/FooterHome';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import { useNavigation } from '@react-navigation/native';
+import { StackNavigationProp } from '@react-navigation/stack';
 
+type RootStackParamList = {
+    Order: undefined;
+};
+
+type NavigationProp = StackNavigationProp<RootStackParamList, 'Order'>;
 
 export default function OrderList() {
     const [orders, setOrders] = useState<any[]>([]);
@@ -22,6 +32,19 @@ export default function OrderList() {
     const [hasMore, setHasMore] = useState(true);
     const PAGE_SIZE = 10;
     const insets = useSafeAreaInsets();
+    const [selectedOrder, setSelectedOrder] = useState<any | null>(null);
+    const [modalVisible, setModalVisible] = useState(false);
+    const navigation = useNavigation<NavigationProp>();
+
+    const openOrderDetails = (order: any) => {
+        setSelectedOrder(order);
+        setModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setModalVisible(false);
+        setSelectedOrder(null);
+    };
 
     const loadOrders = async (reset = false) => {
         try {
@@ -104,13 +127,14 @@ export default function OrderList() {
     };
 
     const renderItem = ({ item }: { item: any }) => (
-        <View style={styles.orderItem}>
+        <TouchableOpacity onPress={() => openOrderDetails(item)} style={styles.orderItem}>
             <Text style={styles.orderId}>Pedido #{item.orderId}</Text>
             <Text style={styles.orderStatus}>{getFriendlyStatusMessage(item?.orderStatus)}</Text>
             <Text style={styles.orderDate}>{formatToBrazilianDate(item?.orderDate)}</Text>
             <Text style={styles.orderTotal}>R$ {item.totalPrice.toFixed(2)}</Text>
-        </View>
+        </TouchableOpacity>
     );
+
 
     if (loading && page === 0) {
         return (
@@ -138,6 +162,39 @@ export default function OrderList() {
                     ) : null
                 }
             />
+            <Modal
+                visible={modalVisible}
+                transparent
+                animationType="slide"
+                onRequestClose={closeModal}
+            >
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        {selectedOrder && (
+                            <>
+                                <Text style={styles.modalTitle}>Detalhes do Pedido #{selectedOrder.orderId}</Text>
+                                <Text>Status: {getFriendlyStatusMessage(selectedOrder.orderStatus)}</Text>
+                                <Text>Data: {formatToBrazilianDate(selectedOrder.orderDate)}</Text>
+                                <Text>Total: R$ {selectedOrder.totalPrice.toFixed(2)}</Text>
+
+                                {/* Botão Condicional */}
+                                {selectedOrder.orderStatus !== 'FINISHED' && selectedOrder.orderStatus !== 'CANCELED' && (
+                                    <Button
+                                        title="Ver Pedido"
+                                        onPress={async () => {
+                                            await AsyncStorage.setItem('@lastOrderId', String(selectedOrder.orderId));
+                                            closeModal();
+                                            navigation.navigate('Order');
+                                        }}
+                                    />
+                                )}
+                                <Button title="Fechar" onPress={closeModal} />
+                            </>
+                        )}
+                    </View>
+                </View>
+            </Modal>
+
             <FooterHome />
             <AccessibilityButton />
         </View>

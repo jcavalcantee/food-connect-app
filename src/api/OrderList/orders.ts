@@ -1,6 +1,4 @@
-
 import order from '../clients/Order';
-
 
 
 export async function getOrdersByUserId(userId: number, page = 0, size = 10) {
