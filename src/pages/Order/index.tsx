@@ -6,6 +6,7 @@ import FooterHome from '../../components/FooterHome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { connectToOrderUpdates, disconnectFromOrderUpdates } from '../../api/order/sse';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import * as Notifications from 'expo-notifications';
 
 const OrderScreen = () => {
   const [order, setOrder] = useState<any>(null);
@@ -30,7 +31,15 @@ const OrderScreen = () => {
                 console.error('Erro ao salvar novo status no AsyncStorage:', err)
               );
 
-              // Se finalizou, limpar o carrinho e o último pedido
+              // Notificação local aqui
+              Notifications.scheduleNotificationAsync({
+                content: {
+                  title: 'Atualização do pedido',
+                  body: getFriendlyStatusMessage(cleanStatus),
+                },
+                trigger: null,
+              });
+
               if (cleanStatus === 'FINISHED') {
                 AsyncStorage.multiRemove(['@cart', '@lastOrder']).then(() => {
                   console.log('Carrinho e último pedido limpos após finalização');
@@ -42,7 +51,6 @@ const OrderScreen = () => {
 
               return updatedOrder;
             });
-
           } else {
             console.warn('Status SSE inválido ou indefinido:', newStatus);
           }
