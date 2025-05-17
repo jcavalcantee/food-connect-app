@@ -29,7 +29,7 @@ type Product = {
 };
 
 type RootStackParamList = {
-    Cart: undefined;
+    Cart: { storeId: number };
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Cart'>;
@@ -167,7 +167,7 @@ export default function StoreProductsScreen() {
                     'Você só pode adicionar produtos de uma loja por vez. Esvazie o carrinho para continuar.',
                     [{
                         text: 'OK',
-                        onPress: () => navigation.navigate('Cart')
+                        onPress: () => navigation.navigate('Cart', { storeId: storeInfo.storeId })
                     }]
                 );
                 return;
@@ -183,8 +183,8 @@ export default function StoreProductsScreen() {
             }
 
             await AsyncStorage.setItem('@cartItems', JSON.stringify(cartItems));
-            updateCartCount();
-            navigation.navigate('Cart');""
+            navigation.navigate('Cart', { storeId: storeInfo.storeId });
+
         } catch (error) {
             console.error('Erro ao salvar no carrinho:', error);
         }
@@ -218,7 +218,7 @@ export default function StoreProductsScreen() {
                 <View style={styles.header}>
                     <View style={{ width: '10%' }}></View>
                     <Image source={Logo} style={styles.imageLogo} />
-                    <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Cart', { storeId: storeInfo.storeId })}>
                         <MaterialCommunityIcons name="shopping-outline" size={30} color="black" />
                         <Text style={styles.cartItemsCount}>{cartCount}</Text>
                     </TouchableOpacity>

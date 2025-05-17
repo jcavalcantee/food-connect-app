@@ -1,13 +1,14 @@
 import React, { useState } from 'react';
 import { View, Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import Logo from "../../assets/images/icon.png";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useRoute } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { style } from "./styles";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useFocusEffect } from '@react-navigation/native';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 import InfoModal from '../../components/InfoModal';
+import { getStoreStatus } from '../../api/register/apiRegisterCustomer';
 
 type RootStackParamList = {
   StoreProducts: undefined;
@@ -30,6 +31,8 @@ export default function SacolaScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState<string>('');
   const [modalMessage, setModalMessage] = useState<string>('');
+  const route = useRoute();
+  const { storeId } = route.params as { storeId: number };
   const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
 
   useFocusEffect(
@@ -73,11 +76,18 @@ export default function SacolaScreen() {
     updateCart(newItems);
   };
 
-  const goToPayment = () => {
+  const goToPayment = async () => {
     if (items.length > 0) {
-      navigation.navigate('Payment');
+      const isOpen = await getStoreStatus(storeId);
+      if (isOpen === false) {
+        setModalTitle("Aviso");
+        setModalMessage("Loja fechada neste momento. Tente novamente mais tarde.");
+        setModalVisible(true);
+      } else {
+        navigation.navigate('Payment');
+      }
     } else {
-      setModalTitle("Erro");
+      setModalTitle("Aviso");
       setModalMessage("Preencha o carrinho antes de continuar!");
       setModalVisible(true);
       return;

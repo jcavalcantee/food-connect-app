@@ -44,3 +44,13 @@ export async function registerCustomer(customer: RegisterCustomerForm) {
         throw error;
     }
 };
+
+export async function getStoreStatus(storeId: number) {
+    try {
+        const response = await registerCustomerClient.get(`/store/status?storeId=${storeId}`);
+        return response.data;
+    } catch (error) {
+        console.error("Erro ao buscar status da loja:", error);
+        throw error;
+    }
+}
