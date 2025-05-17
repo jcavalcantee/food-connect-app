@@ -21,7 +21,7 @@ type GroupedByFoodCourt = {
 type Props = {
   visible: boolean;
   onClose: () => void;
-  onConfirm: (storeId: string | number) => void;
+  onConfirm: (data: { foodCourt: string; storeName: string; storeId: number }) => void;
   data: GroupedByFoodCourt[];
 };
 
@@ -85,9 +85,17 @@ const ChooseSnackBarModal: React.FC<Props> = ({
           <TouchableOpacity
             style={styles.confirmBtn}
             onPress={() => {
-              if (lanchoneteSelecionada !== null) {
-                onConfirm(lanchoneteSelecionada);
-                onClose();
+              if (lanchoneteSelecionada !== null && pracaSelecionada) {
+                const praca = data.find(item => item.foodCourt === pracaSelecionada);
+                const store = praca?.stores.find(s => s.storeId === lanchoneteSelecionada);
+                if (praca && store) {
+                  onConfirm({
+                    foodCourt: praca.foodCourt,
+                    storeName: store.storeName,
+                    storeId: store.storeId,
+                  });
+                  onClose();
+                }
               }
             }}
             disabled={!pracaSelecionada || lanchoneteSelecionada === null}

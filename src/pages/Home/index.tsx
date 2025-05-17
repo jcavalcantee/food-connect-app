@@ -14,7 +14,13 @@ import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
     Home: undefined;
-    StoreProducts: { storeId: string | number };
+    StoreProducts: {
+        storeInfo: {
+            foodCourt: string;
+            storeName: string;
+            storeId: number;
+        };
+    };
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Home'>;
@@ -116,12 +122,12 @@ export default function ProfileScreen() {
             <FooterHome />
 
             <AccessibilityButton />
-            
+
             <ChooseSnackBarModal
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onConfirm={(lanchonete) => {
-                    navigation.navigate('StoreProducts', { storeId: lanchonete });
+                    navigation.navigate('StoreProducts', { storeInfo: lanchonete });
                 }}
                 data={selectedProduct ? selectedProduct : []}
             />
