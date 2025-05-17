@@ -59,16 +59,11 @@ const OrderScreen = () => {
               console.warn('Status SSE inválido ou indefinido:', newStatus);
             }
           });
-          unsubscribe = stop ?? disconnectFromOrderUpdates;
         }
       };
 
       subscribeToOrderUpdates();
 
-      return () => {
-        if (unsubscribe) unsubscribe();
-        else disconnectFromOrderUpdates();
-      };
     }, [])
   );
 
