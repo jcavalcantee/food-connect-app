@@ -39,6 +39,7 @@ export default function StoreProductsScreen() {
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
     const [selectedCategory, setSelectedCategory] = useState<number>(1);
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
+    const [cartCount, setCartCount] = useState(0);
     const route = useRoute();
     const { storeInfo } = route.params as { storeInfo: { foodCourt: string, storeName: string, storeId: number } };
     const navigation = useNavigation<NavigationProp>();
@@ -69,6 +70,38 @@ export default function StoreProductsScreen() {
         }, [storeInfo.storeId])
     );
 
+    const updateCartCount = async () => {
+        const storedCart = await AsyncStorage.getItem('@cartItems');
+        if (storedCart) {
+            const items = JSON.parse(storedCart);
+            setCartCount(items.length);
+        } else {
+            setCartCount(0);
+        }
+    };
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const unsubscribe = navigation.addListener('focus', () => {
+                updateCartCount();
+            });
+
+            return unsubscribe;
+        }, [navigation])
+    )
+
+    useEffect(() => {
+        const fetchCartCount = async () => {
+            const storedCart = await AsyncStorage.getItem('@cartItems');
+            if (storedCart) {
+                const items = JSON.parse(storedCart);
+                setCartCount(items.length);
+            } else {
+                setCartCount(0);
+            }
+        };
+        fetchCartCount();
+    }, []);
 
     const saveQuantitiesToStorage = async (updatedQuantities: any) => {
         try {
@@ -150,7 +183,8 @@ export default function StoreProductsScreen() {
             }
 
             await AsyncStorage.setItem('@cartItems', JSON.stringify(cartItems));
-            navigation.navigate('Cart');
+            updateCartCount();
+            navigation.navigate('Cart');""
         } catch (error) {
             console.error('Erro ao salvar no carrinho:', error);
         }
@@ -186,7 +220,7 @@ export default function StoreProductsScreen() {
                     <Image source={Logo} style={styles.imageLogo} />
                     <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
                         <MaterialCommunityIcons name="shopping-outline" size={30} color="black" />
-                        <Text style={styles.cartItemsCount}>10</Text>
+                        <Text style={styles.cartItemsCount}>{cartCount}</Text>
                     </TouchableOpacity>
                 </View>
                 <View style={styles.imagesContainer}>
