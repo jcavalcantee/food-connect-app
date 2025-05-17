@@ -60,14 +60,6 @@ export default function Profile() {
         </View>
       </TouchableOpacity>
 
-      <TouchableOpacity style={styles.item} onPress={() => navigation.navigate('Notifications')}>
-        <Ionicons name="notifications" size={24} color="#000" />
-        <View style={{ marginLeft: 10 }}>
-          <Text style={styles.itemTitle}>Notificações</Text>
-          <Text style={styles.itemSubtitle}>Minha central de notificações</Text>
-        </View>
-      </TouchableOpacity>
-
       <TouchableOpacity style={styles.item} onPress={() => confirmLogout(navigation)}>
         <Ionicons name="log-out" size={24} color="#000" />
         <View style={{ marginLeft: 10 }}>

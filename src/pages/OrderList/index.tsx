@@ -11,7 +11,7 @@ import {
     ScrollView
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { getOrdersByUserId } from '../../api/orderList/orders';
+import { getOrdersByUserId } from '../../api/OrderList/orders';
 import styles from './styles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import FooterHome from '../../components/FooterHome';
