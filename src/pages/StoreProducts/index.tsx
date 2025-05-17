@@ -40,14 +40,14 @@ export default function StoreProductsScreen() {
     const [selectedCategory, setSelectedCategory] = useState<number>(1);
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
     const route = useRoute();
-    const { storeId } = route.params as { storeId: number };
+    const { storeInfo } = route.params as { storeInfo: { foodCourt: string, storeName: string, storeId: number } };
     const navigation = useNavigation<NavigationProp>();
 
     useFocusEffect(
         React.useCallback(() => {
             const fetchProductsAndQuantities = async () => {
                 try {
-                    const data = await getProductsByStore(storeId);
+                    const data = await getProductsByStore(storeInfo.storeId);
                     setAllProducts(data);
                     filterByCategory(1, data);
 
@@ -66,7 +66,7 @@ export default function StoreProductsScreen() {
             };
 
             fetchProductsAndQuantities();
-        }, [storeId])
+        }, [storeInfo.storeId])
     );
 
 
@@ -120,7 +120,7 @@ export default function StoreProductsScreen() {
             imagem: product.image_url,
             quantidade: quantity,
             estimativa: product.expected_delivery_time || 'Previsão indisponível',
-            storeId: storeId // inclui o storeId aqui
+            storeId: storeInfo.storeId // inclui o storeId aqui
         };
 
         try {
@@ -128,7 +128,7 @@ export default function StoreProductsScreen() {
             const cartItems = existingCart ? JSON.parse(existingCart) : [];
 
             // Se o carrinho não estiver vazio, verifica se todos os produtos são da mesma loja
-            if (cartItems.length > 0 && cartItems[0].storeId !== storeId) {
+            if (cartItems.length > 0 && cartItems[0].storeId !== storeInfo.storeId) {
                 Alert.alert(
                     'Carrinho com outra loja',
                     'Você só pode adicionar produtos de uma loja por vez. Esvazie o carrinho para continuar.',
@@ -193,8 +193,8 @@ export default function StoreProductsScreen() {
                     <Image source={SenacCampus} style={styles.imageCarrosel} />
                     <View style={styles.storeInfoBox}>
                         <Image source={Logo} style={styles.headerImage} />
-                        <Text style={styles.storeName}>Nome da Loja</Text>
-                        <Text style={styles.location}>Endereço da Loja</Text>
+                        <Text style={styles.storeName}>{storeInfo.storeName}</Text>
+                        <Text style={styles.location}>Localização: {storeInfo.foodCourt}</Text>
                     </View>
                 </View>
 
