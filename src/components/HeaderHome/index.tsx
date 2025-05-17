@@ -12,7 +12,7 @@ interface HeaderHomeProps {
     username: string;
 }
 type RootStackParamList = {
-    Cart: undefined;
+    Cart: {storeId: number};
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Cart'>;
@@ -39,7 +39,7 @@ export default function HeaderHome({ username }: HeaderHomeProps) {
             <View style={styles.container}>
                 <View style={{ width: '10%' }}></View>
                 <Image source={Logo} style={styles.imageLogo} />
-                <TouchableOpacity onPress={() => navigation.navigate('Cart')}>
+                <TouchableOpacity onPress={() => navigation.navigate('Cart', {storeId: 1})}>
                     <MaterialCommunityIcons name="shopping-outline" size={30} color="black" />
                     <Text style={styles.cartItemsCount}>{cartCount}</Text>
                 </TouchableOpacity>
