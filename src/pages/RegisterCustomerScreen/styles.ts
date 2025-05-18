@@ -34,7 +34,7 @@ export const style = StyleSheet.create({
 
     inputMasked: {
         width: "95%",
-        height: "25%",
+        height: "30%",
         borderWidth: 1,
         borderColor: "#ccc",
         borderRadius: 50,

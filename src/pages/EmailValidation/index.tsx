@@ -11,6 +11,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import LoadingModal from '../../components/LoadingModal';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 
 type RootStackParamList = {
     EmailValidation: undefined;
@@ -29,6 +30,18 @@ export default function EmailValidation() {
     const [cooldown, setCooldown] = useState(false);
     const [cooldownTimeLeft, setCooldownTimeLeft] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
+    const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (onModalCloseAction) {
+            onModalCloseAction();
+            setOnModalCloseAction(null);
+        }
+    };
 
     useEffect(() => {
         if (timeLeft <= 0 && isFocused) {
@@ -40,7 +53,7 @@ export default function EmailValidation() {
             setTimeLeft(prevTime => prevTime - 1);
         }, 1000);
 
-        return () => clearInterval(timer); 
+        return () => clearInterval(timer);
     }, [timeLeft, isFocused]);
 
     // Formata o tempo para mm:ss
@@ -52,7 +65,9 @@ export default function EmailValidation() {
 
     const handleResendCode = async () => {
         if (cooldown) {
-            Alert.alert(`Tempo restante para reenvio de código: ${formatTime(cooldownTimeLeft)} minutos`);
+            setModalTitle("Aviso");
+            setModalMessage("Tempo restante para reenvio de código: ${formatTime(cooldownTimeLeft)} minutos");
+            setModalVisible(true);
             return;
         }
 
@@ -61,7 +76,9 @@ export default function EmailValidation() {
         try {
             const response = await sendValidationCode(email);
             if (response === 201) {
-                Alert.alert("Código reenviado com sucesso!");
+                setModalTitle("Sucesso");
+                setModalMessage("Código reenviado com sucesso!");
+                setModalVisible(true);
                 setTimeLeft(600);
                 setCodeValues(['', '', '', '']);
                 setCooldown(true);
@@ -77,10 +94,14 @@ export default function EmailValidation() {
                     });
                 }, 1000);
             } else {
-                Alert.alert("Erro no reenvio do código");
+                setModalTitle("Erro");
+                setModalMessage("Erro no reenvio do código.\nTente novamente mais tarde.");
+                setModalVisible(true);
             }
         } catch (error) {
-            Alert.alert("Algo deu errado.\nTente mais tarde!");
+            setModalTitle("Erro");
+            setModalMessage("Algo deu errado.\nTente mais tarde!");
+            setModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -104,22 +125,31 @@ export default function EmailValidation() {
     const handleValidationAccount = async () => {
         const code = codeValues.join('');
         if (code.length !== 4) {
-            Alert.alert("Código de validação deve conter 4 dígitos.");
+            setModalTitle("Erro");
+            setModalMessage("Código de validação deve conter 4 dígitos.");
+            setModalVisible(true);
             return;
         }
 
         try {
             setLoading(true);
             const response = await validateAccount(email, code);
+            console.log(response);
             if (response === 200) {
-                Alert.alert("Email validado com sucesso!");
-                navigation.navigate('RegisterCustomerScreen', { email });
+                setModalTitle("Sucesso");
+                setModalMessage("Email validado com sucesso!");
+                setOnModalCloseAction(() => () => navigation.navigate('RegisterCustomerScreen', { email }));
+                setModalVisible(true);
             } else {
-                Alert.alert("Erro na validação do email");
+                setModalTitle("Erro");
+                setModalMessage("Erro na validação do email.\nTente novamente mais tarde.");
+                setModalVisible(true);
             }
         } catch (error: any) {
-            if(error.response && error.response.status === 400) {
-                Alert.alert("O Código de validação fornecido não é válido.");
+            if (error.response && error.response.status === 400) {
+                setModalTitle("Erro");
+                setModalMessage("O Código de validação fornecido não é válido.");
+                setModalVisible(true);
             }
         } finally {
             setLoading(false);
@@ -160,15 +190,21 @@ export default function EmailValidation() {
             </ScrollView>
 
             <View style={style.footer}>
-                <Button 
-                    onPress={handleValidationAccount} 
-                    title='Confirmar' 
+                <Button
+                    onPress={handleValidationAccount}
+                    title='Confirmar'
                     disabled={false}
-                    style={{ height: '30%'}}
+                    style={{ height: '30%' }}
                 />
             </View>
             <LoadingModal visible={loading} />
             <AccessibilityButton />
+            <InfoModal
+                visible={modalVisible}
+                onClose={handleModalClose}
+                title={modalTitle}
+                message={modalMessage}
+            />
         </KeyboardAvoidingView>
     );
 }
