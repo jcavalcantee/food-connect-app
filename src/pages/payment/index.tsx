@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import order from '../../api/clients/Order'; // ajuste o caminho se necessário
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 // ...outros imports...
 
 // Define your navigation param list
@@ -60,6 +61,10 @@ const PaymentScreen = () => {
   const navigation = useNavigation<import('@react-navigation/native').NavigationProp<RootStackParamList>>();
   const [timeLeft, setTimeLeft] = useState(5 * 60); // 5 minutos em segundos
   const pixCode = '0020150840358408.BR...';
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState<string>('');
+  const [modalMessage, setModalMessage] = useState<string>('');
+  const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -77,12 +82,16 @@ const PaymentScreen = () => {
   const copyToClipboard = async () => {
     try {
       Clipboard.setString(pixCode);
-      alert('Código copiado!');
+      setModalTitle("Aviso");
+      setModalMessage("Código copiado!");
+      setModalVisible(true);
 
       const userInfoString = await AsyncStorage.getItem("userInfo");
 
       if (!userInfoString) {
-        alert('Usuário não encontrado no armazenamento.');
+        setModalTitle("Erro");
+        setModalMessage("Usuário não encontrado no armazenamento.");
+        setModalVisible(true);
         return;
       }
 
@@ -90,7 +99,9 @@ const PaymentScreen = () => {
       const customerId = userInfo?.id || userInfo?.customerId; // ajuste aqui conforme a estrutura real
 
       if (!customerId) {
-        alert('ID do cliente não encontrado nos dados do usuário.');
+        setModalTitle("Erro");
+        setModalMessage("ID do cliente não encontrado nos dados do usuário.");
+        setModalVisible(true);
         return;
       }
 
@@ -102,7 +113,9 @@ const PaymentScreen = () => {
       }, 5000);
 
     } catch (error) {
-      alert('Erro ao processar pedido.');
+      setModalTitle("Erro");
+      setModalMessage("Erro ao processar pedido. Tente novamente mais tarde!");
+      setModalVisible(true);
       console.error(error);
     }
   };
@@ -110,6 +123,14 @@ const PaymentScreen = () => {
   // const progressWidth = `${((5 * 60 - timeLeft) / (5 * 60)) * 100}%`;
   const screenWidth = Dimensions.get('window').width;
   const progressWidth = ((5 * 60 - timeLeft) / (5 * 60)) * screenWidth;
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    if (onModalCloseAction) {
+      onModalCloseAction();
+      setOnModalCloseAction(null);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -136,6 +157,12 @@ const PaymentScreen = () => {
         <View style={[styles.progressBarFill, { width: progressWidth }]} />
       </View>
       <AccessibilityButton />
+      <InfoModal
+        visible={modalVisible}
+        onClose={handleModalClose}
+        title={modalTitle}
+        message={modalMessage}
+      />
     </View>
   );
 };
