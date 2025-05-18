@@ -9,6 +9,7 @@ import { getCustomerData, updateCustomerData } from '../../api/clients/customerC
 import LoadingModal from "../../components/LoadingModal";
 import { updatePassword } from '../../api/clients/customerClient';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 
 
 export default function AlterUser() {
@@ -19,6 +20,9 @@ export default function AlterUser() {
     const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [error, setError] = useState('');
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
 
     useEffect(() => {
         const fetchCustomerData = async () => {
@@ -54,26 +58,44 @@ export default function AlterUser() {
         setPassword(text);
     };
 
-    const handleSaveChanges = async () => {
+   const handleSaveChanges = async () => {
+    try {
+        setLoading(true);
 
-        try {
-            setLoading(true);
+        // Atualiza os dados do cliente
+        const updatedCustomer = { name, email, phoneNumber: phone };
+        await updateCustomerData(updatedCustomer);
 
-            // Atualiza os dados do cliente
-            const updatedCustomer = { name, email, phoneNumber: phone };
-            await updateCustomerData(updatedCustomer);
+        // Atualiza o AsyncStorage com os novos dados
+        const updatedUserInfo = {
+            email,
+            name,
+            cellphoneNumber: phone
+        };
+        await AsyncStorage.setItem("userInfo", JSON.stringify(updatedUserInfo));
 
-            if (password.trim() !== '') {
-                await updatePassword({ email, password });
-            }
-            // Se a senha foi alterada, atualiza a senha
+        if (password.trim() !== '') {
+            await updatePassword({ email, password });
+        }
+        setModalTitle("Sucesso");
+        setModalMessage("Dados atualizados com sucesso!");
+        setModalVisible(true);
+        // Alert.alert("Dados atualizados com sucesso!");
+        // navigation.goBack();
+    } catch (error) {
+        setModalTitle("Erro");
+        setModalMessage("Erro ao atualizar os dados do cliente");
+        setModalVisible(true);
+        // Alert.alert("Erro ao atualizar os dados do cliente");
+    } finally {
+        setLoading(false);
+    }
+};
 
-            Alert.alert("Dados atualizados com sucesso!");
+    const handleCloseModal = () => {
+        setModalVisible(false);
+        if (modalTitle === "Sucesso") {
             navigation.goBack();
-        } catch (error) {
-            Alert.alert("Erro ao atualizar os dados do cliente");
-        } finally {
-            setLoading(false);
         }
     };
 
@@ -85,6 +107,7 @@ export default function AlterUser() {
             <View style={style.content}>
                 <Text style={style.title}>Alterar Dados:</Text>
 
+                <Text style={{ marginBottom: 4 , fontWeight: 'bold' }}>Nome completo</Text>
                 <TextInput
                     style={style.input}
                     placeholder="Digite seu nome completo"
@@ -92,6 +115,7 @@ export default function AlterUser() {
                     onChangeText={setName}
                 />
 
+                <Text style={{ marginBottom: 4, marginTop: 12 , fontWeight: 'bold' }}>E-mail</Text>
                 <TextInput
                     style={style.input}
                     placeholder="email@com"
@@ -99,6 +123,7 @@ export default function AlterUser() {
                     editable={false}
                 />
 
+                <Text style={{ marginBottom: 4, marginTop: 12 , fontWeight: 'bold' }}>Número de telefone</Text>
                 <TextInput
                     style={style.input}
                     placeholder="Digite seu número"
@@ -106,6 +131,7 @@ export default function AlterUser() {
                     onChangeText={setPhone}
                 />
 
+                <Text style={{ marginBottom: 4, marginTop: 12 , fontWeight: 'bold' }}>Senha</Text>
                 <TextInput
                     style={[style.input, { borderColor: error ? 'red' : '#ccc' }]}
                     placeholder="Digite sua senha"
@@ -118,13 +144,25 @@ export default function AlterUser() {
                 <View style={style.footer}>
                     <View style={style.footer}>
                         <Button
+                            title="Voltar"
+                            onPress={() => { navigation.goBack(); }}
+                            style={{ width: 150, height: 60, alignSelf: 'center', marginBottom: 1 }}
+                        />
+                        <Button
                             title="Salvar Alterações"
                             onPress={() => { handleSaveChanges(); }}
+                            style={{ width: 150, alignSelf: 'center', marginTop: 10, height: 60 }}
                         />
                     </View>
                 </View>
             </View>
             <LoadingModal visible={loading} />
+            <InfoModal
+                visible={modalVisible}
+                title={modalTitle}
+                message={modalMessage}
+                onClose={handleCloseModal}
+            />
             <AccessibilityButton />
         </View>
     );
