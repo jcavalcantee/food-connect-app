@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useForm, Controller } from "react-hook-form";
-import { View, Text, Alert, Modal, TouchableOpacity, Linking } from "react-native";
+import { View, Text, Modal, TouchableOpacity, Linking } from "react-native";
 import HeaderApp from "../../components/Header/header";
 import { style } from "./styles";
 import ControlledTextInput from "../../components/Controller/ControlledTextInput";
@@ -11,6 +11,7 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import LoadingModal from "../../components/LoadingModal";
 import { TextInputMask } from 'react-native-masked-text'; // Importando a biblioteca de máscara
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from "../../components/InfoModal";
 
 // Tipos da navegação
 type NavigationProp = StackNavigationProp<RootStackParamList, 'RegisterCustomerScreen'>;
@@ -31,7 +32,18 @@ export default function RegisterCustomerScreen() {
     const navigation = useNavigation<NavigationProp>();
     const route = useRoute<RegisterCustomerRouteProp>();
     const receivedEmail = route.params?.email || '';
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(false); const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
+    const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (onModalCloseAction) {
+            onModalCloseAction();
+            setOnModalCloseAction(null);
+        }
+    };
 
     const { control, handleSubmit, setValue, formState: { errors, isValid } } = useForm<RegisterCustomerForm>({
         mode: 'onChange',
@@ -57,10 +69,14 @@ export default function RegisterCustomerScreen() {
 
             const response = await registerCustomer(cleanedData);
             if (response === 201) {
-                Alert.alert("Cliente cadastrado com sucesso!");
-                navigation.navigate('Login');
+                setModalTitle("Sucesso");
+                setModalMessage("Cliente cadastrado com sucesso!");
+                setOnModalCloseAction(() => () => navigation.navigate('Login'));
+                setModalVisible(true);
             } else {
-                Alert.alert("Erro no cadastro do cliente!");
+                setModalTitle("Erro");
+                setModalMessage("Erro no cadastro do cliente!");
+                setModalVisible(true);
             }
         } catch (error) {
             console.error("Erro ao cadastrar cliente:", error);
@@ -159,50 +175,58 @@ export default function RegisterCustomerScreen() {
                 onRequestClose={() => setIsTermsModalVisible(false)}>
                 <View style={style.modalContainer}>
                     <View style={style.modalContent}>
-                    <Text style={style.modalTitle}>Termos de Uso</Text>
-                    <Text style={style.modalText}>
-                    Ao usar este aplicativo, você concorda em cumprir os{' '}
-                        <Text 
-                    style={{ color: 'blue', textDecorationLine: 'underline' }}
-                    onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Termos-de-uso.html')}>
-                    Termos e condições
-                </Text>{' '}
-                estabelecidos. O aplicativo pode coletar e processar dados pessoais de acordo com a{' '}
-                <Text 
-                    style={{ color: 'blue', textDecorationLine: 'underline' }}
-                    onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Politicas_privacidade.html')}
-                >
-                    Política de Privacidade
-                </Text>.
-                    </Text>
-                <Text style={style.modalText}>
-                Ao clicar em "Aceitar", você concorda que leu e está de acordo com os termos acima.
-                </Text>
-                <View style={style.modalButtons}>
-    <TouchableOpacity
-        style={style.modalButton}
-        onPress={() => {
-            if (isValid) {
-                setIsTermsModalVisible(false);
-                handleSubmit(handleRegisterCustomer)(); // Envia os dados de cadastro
-            } else {
-                Alert.alert("Erro", "Preencha todos os campos corretamente antes de aceitar os termos.");
-            }
-        }}
-    >
-        <Text style={style.modalButtonText}>Aceitar</Text>
-    </TouchableOpacity>
-    <TouchableOpacity
-        style={[style.modalButton, { backgroundColor: 'red' }]} // Botão "Fechar" com cor diferente
-        onPress={() => setIsTermsModalVisible(false)} // Fecha o modal
-    >
-        <Text style={style.modalButtonText}>Fechar</Text>
-    </TouchableOpacity>
-</View>
-        </View>
-    </View>
-</Modal>
-<AccessibilityButton />
+                        <Text style={style.modalTitle}>Termos de Uso</Text>
+                        <Text style={style.modalText}>
+                            Ao usar este aplicativo, você concorda em cumprir os{' '}
+                            <Text
+                                style={{ color: 'blue', textDecorationLine: 'underline' }}
+                                onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Termos-de-uso.html')}>
+                                Termos e condições
+                            </Text>{' '}
+                            estabelecidos. O aplicativo pode coletar e processar dados pessoais de acordo com a{' '}
+                            <Text
+                                style={{ color: 'blue', textDecorationLine: 'underline' }}
+                                onPress={() => Linking.openURL('https://foodconnectca.blob.core.windows.net/terms-polices/Termos-Politicas/Politicas_privacidade.html')}
+                            >
+                                Política de Privacidade
+                            </Text>.
+                        </Text>
+                        <Text style={style.modalText}>
+                            Ao clicar em "Aceitar", você concorda que leu e está de acordo com os termos acima.
+                        </Text>
+                        <View style={style.modalButtons}>
+                            <TouchableOpacity
+                                style={style.modalButton}
+                                onPress={() => {
+                                    if (isValid) {
+                                        setIsTermsModalVisible(false);
+                                        handleSubmit(handleRegisterCustomer)(); // Envia os dados de cadastro
+                                    } else {
+                                        setModalTitle("Erro");
+                                        setModalMessage("Preencha todos os campos corretamente antes de aceitar os termos.");
+                                        setModalVisible(true);
+                                    }
+                                }}
+                            >
+                                <Text style={style.modalButtonText}>Aceitar</Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                                style={[style.modalButton, { backgroundColor: 'red' }]} // Botão "Fechar" com cor diferente
+                                onPress={() => setIsTermsModalVisible(false)} // Fecha o modal
+                            >
+                                <Text style={style.modalButtonText}>Fechar</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+            <AccessibilityButton />
+            <InfoModal
+                visible={modalVisible}
+                onClose={handleModalClose}
+                title={modalTitle}
+                message={modalMessage}
+            />
         </View>
     );
 }

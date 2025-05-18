@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { View, Text, ScrollView, TouchableOpacity } from "react-native";
 import FooterHome from "../../components/FooterHome";
 import HeaderApp from "../../components/Header/header";
@@ -10,6 +10,7 @@ import { StackNavigationProp } from "@react-navigation/stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
 import { Alert } from "react-native";
+import InfoModal from "../../components/InfoModal";
 
 // Define the RootStackParamList type
 type RootStackParamList = {
@@ -17,37 +18,48 @@ type RootStackParamList = {
   Notifications: undefined;
   Login: undefined;
 };
-
-const confirmLogout = (navigation: StackNavigationProp<RootStackParamList>) => {
-  Alert.alert(
-    "Confirmar Logout",
-    "Você tem certeza que deseja sair da sua conta?",
-    [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Sair",
-        style: "destructive",
-        onPress: async () => {
-          try {
-            await AsyncStorage.clear();
-            Alert.alert("Logout", "Você saiu da sua conta com sucesso!");
-            navigation.reset({
-              index: 0,
-              routes: [{ name: 'Login' }],
-            });
-          } catch (error) {
-            Alert.alert("Erro", "Não foi possível realizar o logout. Tente novamente.");
-            console.error("Erro ao realizar logout:", error);
-          }
-        },
-      },
-    ]
-  );
-};
-
 export default function Profile() {
-
   const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalTitle, setModalTitle] = useState<string>('');
+  const [modalMessage, setModalMessage] = useState<string>('');
+  const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
+
+  const handleModalClose = () => {
+    setModalVisible(false);
+    if (onModalCloseAction) {
+      onModalCloseAction();
+      setOnModalCloseAction(null);
+    }
+  };
+
+  const confirmLogout = (navigation: StackNavigationProp<RootStackParamList>) => {
+    Alert.alert(
+      "Confirmar Logout",
+      "Você tem certeza que deseja sair da sua conta?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sair",
+          style: "destructive",
+          onPress: async () => {
+            try {
+              await AsyncStorage.clear();
+              setModalTitle("Logout");
+              setModalMessage("Você saiu da sua conta com sucesso!");
+              setOnModalCloseAction(() => () => navigation.navigate('Login'));
+              setModalVisible(true);
+            } catch (error) {
+              setModalTitle("Erro");
+              setModalMessage("Não foi possível realizar o logout. Tente novamente.");
+              setModalVisible(true);
+              console.error("Erro ao realizar logout:", error);
+            }
+          },
+        },
+      ]
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -70,7 +82,21 @@ export default function Profile() {
       <FooterHome />
 
       <AccessibilityButton />
-      
+      <InfoModal
+        visible={modalVisible}
+        onClose={handleModalClose}
+        title={modalTitle}
+        message={modalMessage}
+      />
+
     </View>
   );
 }
+
+function setModalTitle(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+function setModalMessage(arg0: string) {
+  throw new Error("Function not implemented.");
+}
+
