@@ -61,6 +61,7 @@ export default function StoreProductsScreen() {
                     });
 
                     setQuantities(loadedQuantities);
+                    updateCartCount();
                 } catch (error) {
                     console.error("Erro ao buscar produtos ou quantidades:", error);
                 }
@@ -79,29 +80,6 @@ export default function StoreProductsScreen() {
             setCartCount(0);
         }
     };
-
-    useFocusEffect(
-        React.useCallback(() => {
-            const unsubscribe = navigation.addListener('focus', () => {
-                updateCartCount();
-            });
-
-            return unsubscribe;
-        }, [navigation])
-    )
-
-    useEffect(() => {
-        const fetchCartCount = async () => {
-            const storedCart = await AsyncStorage.getItem('@cartItems');
-            if (storedCart) {
-                const items = JSON.parse(storedCart);
-                setCartCount(items.length);
-            } else {
-                setCartCount(0);
-            }
-        };
-        fetchCartCount();
-    }, []);
 
     const saveQuantitiesToStorage = async (updatedQuantities: any) => {
         try {
