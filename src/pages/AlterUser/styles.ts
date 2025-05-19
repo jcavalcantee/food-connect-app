@@ -40,7 +40,7 @@ export const style = StyleSheet.create({
 
     input: {
         width: "100%",
-        height: "20%",
+        height: "25%",
         borderWidth: 1,
         borderColor: "#ccc",
         borderRadius: 50,
@@ -51,5 +51,9 @@ export const style = StyleSheet.create({
     footer: {
         width: "100%",
         alignItems: "center",
+    },
+    inner: {
+        flex: 1,
+        justifyContent: 'flex-start',
     },
 });

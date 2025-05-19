@@ -23,7 +23,7 @@ export const style = StyleSheet.create({
 
     input: {
         width: "80%",
-        height: "50%",
+        height: "55%",
         borderWidth: 1,
         borderColor: "#ccc",
         borderRadius: 50,

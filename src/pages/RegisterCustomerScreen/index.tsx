@@ -32,7 +32,8 @@ export default function RegisterCustomerScreen() {
     const navigation = useNavigation<NavigationProp>();
     const route = useRoute<RegisterCustomerRouteProp>();
     const receivedEmail = route.params?.email || '';
-    const [loading, setLoading] = useState(false); const [modalVisible, setModalVisible] = useState(false);
+    const [loading, setLoading] = useState(false); 
+    const [modalVisible, setModalVisible] = useState(false);
     const [modalTitle, setModalTitle] = useState<string>('');
     const [modalMessage, setModalMessage] = useState<string>('');
     const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);

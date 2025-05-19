@@ -120,7 +120,7 @@ const OrderScreen = () => {
 
   return (
     <View style={styles.container}>
-      <HeaderApp />
+      <HeaderApp headerStyle={{ height: '15%', width: '100%' }} logoStyle={{ height: '100%', width: '100%' }} />
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.sectionTitle}>Número do pedido:</Text>
         <Text style={styles.titleText}>{order?.orderId ?? '----'}</Text>
