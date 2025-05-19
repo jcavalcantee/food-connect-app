@@ -102,9 +102,6 @@ export const styles = StyleSheet.create({
     quantityText: {
         fontSize: 16,
     },
-    cartIcon: {
-        padding: 8,
-    },
 
     imageLogo: {
         width: '20%',

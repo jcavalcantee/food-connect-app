@@ -11,6 +11,7 @@ import { useNavigation, useIsFocused } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import LoadingModal from '../../components/LoadingModal';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from '../../components/InfoModal';
 
 type RootStackParamList = {
     EmailResetValidation: undefined;
@@ -29,6 +30,10 @@ export default function EmailResetValidation() {
     const [cooldown, setCooldown] = useState(false);
     const [cooldownTimeLeft, setCooldownTimeLeft] = useState(0);
     const [loading, setLoading] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
+    const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
 
     useEffect(() => {
         if (timeLeft <= 0 && isFocused) {
@@ -40,7 +45,7 @@ export default function EmailResetValidation() {
             setTimeLeft(prevTime => prevTime - 1);
         }, 1000);
 
-        return () => clearInterval(timer); 
+        return () => clearInterval(timer);
     }, [timeLeft, isFocused]);
 
     // Formata o tempo para mm:ss
@@ -52,7 +57,9 @@ export default function EmailResetValidation() {
 
     const handleResendCode = async () => {
         if (cooldown) {
-            Alert.alert(`Tempo restante para reenvio de código: ${formatTime(cooldownTimeLeft)} minutos`);
+            setModalTitle('Aguarde para reenviar');
+            setModalMessage(`Tempo restante para reenvio de código: ${formatTime(cooldownTimeLeft)} minutos`);
+            setModalVisible(true);
             return;
         }
 
@@ -60,8 +67,10 @@ export default function EmailResetValidation() {
 
         try {
             const response = await sendResetPasswordValidationCode(email);
-            if (response === 201) {
-                Alert.alert("Código reenviado com sucesso!");
+            if (response.status === 'Sucesso') {
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setModalVisible(true);
                 setTimeLeft(600);
                 setCodeValues(['', '', '', '']);
                 setCooldown(true);
@@ -77,10 +86,14 @@ export default function EmailResetValidation() {
                     });
                 }, 1000);
             } else {
-                Alert.alert("Erro no reenvio do código");
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setModalVisible(true);
             }
         } catch (error) {
-            Alert.alert("Algo deu errado.\nTente mais tarde!");
+            setModalTitle('Erro');
+            setModalMessage('Algo deu errado.\nTente mais tarde!');
+            setModalVisible(true);
         } finally {
             setLoading(false);
         }
@@ -104,22 +117,34 @@ export default function EmailResetValidation() {
     const handleValidationAccount = async () => {
         const code = codeValues.join('');
         if (code.length !== 4) {
-            Alert.alert("Código de validação deve conter 4 dígitos.");
+            setModalTitle('Código inválido');
+            setModalMessage('Código de validação deve conter 4 dígitos.');
+            setModalVisible(true);
             return;
         }
 
         try {
             setLoading(true);
             const response = await validateAccount(email, code);
-            if (response === 200) {
-                Alert.alert("Email validado com sucesso!");
-                navigation.navigate('ResetPassword', { email });
+            if (response.status === 'Sucesso') {
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setOnModalCloseAction(() => () => navigation.navigate('ResetPassword', { email }));
+                setModalVisible(true);
             } else {
-                Alert.alert("Erro na validação do email");
+                setModalTitle(response.status);
+                setModalMessage(response.message);
+                setModalVisible(true);
             }
         } catch (error: any) {
-            if(error.response && error.response.status === 400) {
-                Alert.alert("O Código de validação fornecido não é válido.");
+            if (error.response && error.response.status === 400) {
+                setModalTitle('Código inválido');
+                setModalMessage('O Código de validação fornecido não é válido.');
+                setModalVisible(true);
+            } else {
+                setModalTitle('Erro');
+                setModalMessage('Algo deu errado.\nTente mais tarde!');
+                setModalVisible(true);
             }
         } finally {
             setLoading(false);
@@ -130,6 +155,14 @@ export default function EmailResetValidation() {
         const newCodeValues = [...codeValues];
         newCodeValues[index] = value;
         setCodeValues(newCodeValues);
+    };
+
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (onModalCloseAction) {
+            onModalCloseAction();
+            setOnModalCloseAction(null);
+        }
     };
 
     return (
@@ -160,15 +193,21 @@ export default function EmailResetValidation() {
             </ScrollView>
 
             <View style={style.footer}>
-                <Button 
-                    onPress={handleValidationAccount} 
-                    title='Confirmar' 
+                <Button
+                    onPress={handleValidationAccount}
+                    title='Confirmar'
                     disabled={false}
-                    style={{ height: '30%'}}
+                    style={{ height: '30%' }}
                 />
             </View>
             <LoadingModal visible={loading} />
             <AccessibilityButton />
+            <InfoModal
+                visible={modalVisible}
+                onClose={handleModalClose}
+                title={modalTitle}
+                message={modalMessage}
+            />
         </KeyboardAvoidingView>
     );
 }

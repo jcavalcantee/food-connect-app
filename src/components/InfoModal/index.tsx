@@ -24,7 +24,7 @@ const InfoModal: React.FC<Props> = ({
                     <Text style={styles.modalTitle}>{title}</Text>
                     <Text style={styles.modalMessage}>{message}</Text>
                     <TouchableOpacity style={styles.closeButton} onPress={onClose}>
-                        <Text style={styles.closeButtonText}>Fechar</Text>
+                        <Text style={styles.closeButtonText}>OK</Text>
                     </TouchableOpacity>
                 </View>
             </View>
