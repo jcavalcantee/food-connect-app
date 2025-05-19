@@ -24,6 +24,7 @@ type CartItem = {
   imagem: string;
   quantidade: number;
   estimativa?: string;
+  storeName?: string;
 };
 export default function SacolaScreen() {
   const navigation = useNavigation<NavigationProp>();
@@ -31,6 +32,7 @@ export default function SacolaScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalTitle, setModalTitle] = useState<string>('');
   const [modalMessage, setModalMessage] = useState<string>('');
+  const [storeName, setStoreName] = useState<string>('');
   const route = useRoute();
   const { storeId } = route.params as { storeId: number };
   const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
@@ -40,7 +42,11 @@ export default function SacolaScreen() {
       const fetchCart = async () => {
         const storedCart = await AsyncStorage.getItem('@cartItems');
         if (storedCart) {
-          setItems(JSON.parse(storedCart));
+          const parsedCart = JSON.parse(storedCart);
+          setItems(parsedCart);
+          if (parsedCart.length > 0 && parsedCart[0].storeName) {
+            setStoreName(parsedCart[0].storeName);
+          }
         } else {
           console.log('Carrinho limpo após finalização do pedido');
           setItems([]);
@@ -128,7 +134,7 @@ export default function SacolaScreen() {
       <View style={style.storeHeader}>
         <Image source={Logo} style={style.logo} />
         <View>
-          <Text style={style.storeName}>Engenheiros do Açaí</Text>
+          <Text style={style.storeName}>{storeName}</Text>
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Text style={style.addMore}>Adicionar mais itens</Text>
           </TouchableOpacity>

@@ -19,6 +19,8 @@ type RootStackParamList = {
             foodCourt: string;
             storeName: string;
             storeId: number;
+            foodCategory: string;
+            selectedProductName: string;
         };
     };
 };
@@ -36,6 +38,7 @@ export default function ProfileScreen() {
     const [modalVisible, setModalVisible] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
+    const [selectedProductItem, setSelectedProductItem] = useState<any>(null);
 
     const navigation = useNavigation<NavigationProp>();
 
@@ -105,6 +108,7 @@ export default function ProfileScreen() {
                 try {
                     const stores = await getStoresGroupedByFoodCourt(item.product_name);
                     setSelectedProduct(stores);
+                    setSelectedProductItem(item);
                     setModalVisible(true);
                 } catch (error) {
                     console.error("Erro ao buscar lojas:", error);
@@ -127,7 +131,13 @@ export default function ProfileScreen() {
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onConfirm={(lanchonete) => {
-                    navigation.navigate('StoreProducts', { storeInfo: lanchonete });
+                    navigation.navigate('StoreProducts', {
+                        storeInfo: {
+                            ...lanchonete,
+                            foodCategory: selectedProductItem?.category_name,
+                            selectedProductName: selectedProductItem?.product_name
+                        }
+                    });
                 }}
                 data={selectedProduct ? selectedProduct : []}
             />

@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
     View,
     Text,
     Image,
     FlatList,
-    TouchableOpacity,
-    Alert
+    TouchableOpacity
 } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import SenacCampus from "../../assets/images/senac_campus.jpg";
@@ -18,6 +17,7 @@ import { getProductsByStore } from "../../api/product/apiGetProducts";
 import Logo from "../../assets/images/icon.png";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AccessibilityButton from "../../components/Accessibility/accessibilityButton";
+import InfoModal from "../../components/InfoModal";
 
 type Product = {
     id: number;
@@ -35,14 +35,31 @@ type RootStackParamList = {
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Cart'>;
 
 export default function StoreProductsScreen() {
+    const [modalVisible, setModalVisible] = useState(false);
+    const [modalTitle, setModalTitle] = useState<string>('');
+    const [modalMessage, setModalMessage] = useState<string>('');
+    const [onModalCloseAction, setOnModalCloseAction] = useState<(() => void) | null>(null);
     const [allProducts, setAllProducts] = useState<Product[]>([]);
     const [filteredProducts, setFilteredProducts] = useState<Product[]>([]);
-    const [selectedCategory, setSelectedCategory] = useState<number>(1);
+    const [selectedCategory, setSelectedCategory] = useState<number>();
     const [quantities, setQuantities] = useState<{ [key: string]: number }>({});
     const [cartCount, setCartCount] = useState(0);
     const route = useRoute();
-    const { storeInfo } = route.params as { storeInfo: { foodCourt: string, storeName: string, storeId: number } };
+    const { storeInfo } = route.params as {
+        storeInfo: {
+            foodCourt: string,
+            storeName: string,
+            storeId: number,
+            foodCategory: string,
+            selectedProductName?: string
+        }
+    };
     const navigation = useNavigation<NavigationProp>();
+    const categoryMap: { [key: string]: number } = {
+        'Bebidas': 1,
+        'Salgados': 2,
+        'Pratos feitos': 3,
+    };
 
     useFocusEffect(
         React.useCallback(() => {
@@ -50,7 +67,7 @@ export default function StoreProductsScreen() {
                 try {
                     const data = await getProductsByStore(storeInfo.storeId);
                     setAllProducts(data);
-                    filterByCategory(1, data);
+                    filterByCategory(categoryMap[storeInfo.foodCategory], data);
 
                     const existingCart = await AsyncStorage.getItem('@cartItems');
                     const cartItems = existingCart ? JSON.parse(existingCart) : [];
@@ -59,6 +76,13 @@ export default function StoreProductsScreen() {
                     cartItems.forEach((item: any) => {
                         loadedQuantities[item.id] = item.quantidade;
                     });
+
+                    if (storeInfo.selectedProductName) {
+                        const selected = data.find((p: Product) => p.name === storeInfo.selectedProductName);
+                        if (selected && !loadedQuantities[selected.id]) {
+                            loadedQuantities[selected.id] = 1;
+                        }
+                    }
 
                     setQuantities(loadedQuantities);
                     updateCartCount();
@@ -131,7 +155,8 @@ export default function StoreProductsScreen() {
             imagem: product.image_url,
             quantidade: quantity,
             estimativa: product.expected_delivery_time || 'Previsão indisponível',
-            storeId: storeInfo.storeId // inclui o storeId aqui
+            storeId: storeInfo.storeId,
+            storeName: storeInfo.storeName
         };
 
         try {
@@ -140,14 +165,10 @@ export default function StoreProductsScreen() {
 
             // Se o carrinho não estiver vazio, verifica se todos os produtos são da mesma loja
             if (cartItems.length > 0 && cartItems[0].storeId !== storeInfo.storeId) {
-                Alert.alert(
-                    'Carrinho com outra loja',
-                    'Você só pode adicionar produtos de uma loja por vez. Esvazie o carrinho para continuar.',
-                    [{
-                        text: 'OK',
-                        onPress: () => navigation.navigate('Cart', { storeId: storeInfo.storeId })
-                    }]
-                );
+                setModalTitle('Carrinho com outra loja');
+                setModalMessage('Você só pode adicionar produtos de uma loja por vez. Esvazie o carrinho para continuar.');
+                setOnModalCloseAction(() => () => navigation.navigate('Cart', { storeId: storeInfo.storeId }));
+                setModalVisible(true);
                 return;
             }
 
@@ -168,6 +189,14 @@ export default function StoreProductsScreen() {
         }
     };
 
+    const handleModalClose = () => {
+        setModalVisible(false);
+        if (onModalCloseAction) {
+            onModalCloseAction();
+            setOnModalCloseAction(null);
+        }
+    };
+
     const renderProduct = ({ item }: { item: Product }) => (
         <View style={styles.card}>
             <Image source={{ uri: item.image_url }} style={styles.productImage} />
@@ -184,7 +213,7 @@ export default function StoreProductsScreen() {
                     </TouchableOpacity>
                 </View>
             </View>
-            <TouchableOpacity style={styles.cartIcon} onPress={() => addToCart(item, quantities[item.id] || 0)}>
+            <TouchableOpacity onPress={() => addToCart(item, quantities[item.id] || 0)}>
                 <MaterialCommunityIcons name="shopping-outline" size={25} color="gray" />
             </TouchableOpacity>
         </View>
@@ -196,9 +225,11 @@ export default function StoreProductsScreen() {
                 <View style={styles.header}>
                     <View style={{ width: '10%' }}></View>
                     <Image source={Logo} style={styles.imageLogo} />
-                    <TouchableOpacity onPress={() => navigation.navigate('Cart', { storeId: storeInfo.storeId })}>
+                    <TouchableOpacity onPress={() => navigation.navigate('Cart', { storeId: storeInfo.storeId })} >
                         <MaterialCommunityIcons name="shopping-outline" size={30} color="black" />
-                        <Text style={styles.cartItemsCount}>{cartCount}</Text>
+                        {cartCount > 0 && (
+                            <Text style={styles.cartItemsCount}>{cartCount}</Text>
+                        )}
                     </TouchableOpacity>
                 </View>
                 <View style={styles.imagesContainer}>
@@ -218,7 +249,7 @@ export default function StoreProductsScreen() {
                         <Text style={[styles.tab, selectedCategory === 1 && styles.activeTab]}>Bebidas</Text>
                     </TouchableOpacity>
                     <TouchableOpacity onPress={() => filterByCategory(3)} style={styles.tabCircle}>
-                        <Text style={[styles.tab, selectedCategory === 3 && styles.activeTab]}>Pratos Prontos</Text>
+                        <Text style={[styles.tab, selectedCategory === 3 && styles.activeTab]}>Pratos feitos</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -231,6 +262,12 @@ export default function StoreProductsScreen() {
             </View>
             <FooterHome />
             <AccessibilityButton />
+            <InfoModal
+                visible={modalVisible}
+                onClose={handleModalClose}
+                title={modalTitle}
+                message={modalMessage}
+            />
         </>
     );
 }
