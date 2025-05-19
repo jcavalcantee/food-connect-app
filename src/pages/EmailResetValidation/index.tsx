@@ -68,8 +68,8 @@ export default function EmailResetValidation() {
         try {
             const response = await sendResetPasswordValidationCode(email);
             if (response.status === 'Sucesso') {
-                setModalTitle(response.status);
-                setModalMessage(response.message);
+                setModalTitle("Sucesso");
+                setModalMessage("Código reenviado com sucesso!");
                 setModalVisible(true);
                 setTimeLeft(600);
                 setCodeValues(['', '', '', '']);
@@ -86,8 +86,8 @@ export default function EmailResetValidation() {
                     });
                 }, 1000);
             } else {
-                setModalTitle(response.status);
-                setModalMessage(response.message);
+                setModalTitle("Erro");
+                setModalMessage("Erro ao reenviar o código.\nTente novamente mais tarde.");
                 setModalVisible(true);
             }
         } catch (error) {
@@ -126,14 +126,14 @@ export default function EmailResetValidation() {
         try {
             setLoading(true);
             const response = await validateAccount(email, code);
-            if (response.status === 'Sucesso') {
-                setModalTitle(response.status);
-                setModalMessage(response.message);
+            if (response === 200) {
+                setModalTitle("Sucesso");
+                setModalMessage("Código validado com sucesso!");
                 setOnModalCloseAction(() => () => navigation.navigate('ResetPassword', { email }));
                 setModalVisible(true);
             } else {
-                setModalTitle(response.status);
-                setModalMessage(response.message);
+                setModalTitle("Erro");
+                setModalMessage("Erro ao validar o código.\nTente novamente mais tarde.");
                 setModalVisible(true);
             }
         } catch (error: any) {
